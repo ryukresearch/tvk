@@ -28,7 +28,7 @@ function buildPulse() {
   let h = `
   <div class="pulse-hero fade-in">
     <div class="dashboard-title">
-      <div class="dashboard-title-logo">T</div>
+      <div class="dashboard-title-logo"><svg viewBox="0 0 42 42" aria-hidden="true"><defs><clipPath id="dl-clip"><circle cx="21" cy="21" r="21"/></clipPath></defs><g clip-path="url(#dl-clip)"><rect x="0" y="0" width="42" height="21" fill="#e94560"/><rect x="0" y="21" width="42" height="21" fill="#fbbf24"/></g><circle cx="21" cy="21" r="20.5" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/></svg></div>
       <div class="dashboard-title-text">
         <h1>${lang==='ta' ? 'தி.வெ.க. டாஷ்போர்டு' : 'TVK Dashboard'}</h1>
         <p>${lang==='ta' ? 'தமிழக வெற்றிக் கழகம் · 2026' : 'Tamilaga Vettri Kazhagam · 2026'}</p>
@@ -114,7 +114,7 @@ function buildPulse() {
     </div>
   </div>
 
-  <div class="tab-foot">made by <span>RYUK</span></div>`;
+  <a class="tab-foot" href="https://x.com/ryuk_nl" target="_blank" rel="noopener noreferrer">made by <span>RYUK</span></a>`;
 
   el.innerHTML = h;
 
