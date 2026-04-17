@@ -143,9 +143,9 @@ function renderConstellation(containerId, personaKey) {
       </svg>
     </div>
     <div class="const-foot">
-      <button class="btn btn-ghost const-share" onclick="openStackShare('${pk}')">
+      <button class="btn btn-ghost const-share" onclick="shareTVK()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        ${lang==='ta'?'பகிர்':'Share my manifesto'}
+        ${lang==='ta'?'பகிர்':'Share'}
       </button>
     </div>
   `;
@@ -274,91 +274,60 @@ function finishQuiz(ans) {
   }, 120);
 }
 
-// ─── STACK SHARE ───
-function openStackShare(personaKey) {
-  const pk = personaKey || persona || 'all';
-  const matches = (pk === 'all')
-    ? PROMISES.slice()
-    : PROMISES.filter(p => p.personas.includes(pk));
-  matches.sort((a, b) => (PROMISE_VAL[b.id]?.yr || 0) - (PROMISE_VAL[a.id]?.yr || 0));
-  const total = matches.reduce((s, p) => s + (PROMISE_VAL[p.id]?.yr || 0), 0);
-  const icon = PERSONA_ICON[pk] || '⭐';
-  const pLabel = t('p_' + (pk === 'all' ? 'all' : pk)) || pk;
+// ─── QUICK SHARE (WhatsApp / Instagram / Copy) ───
+async function shareTVK() {
+  const url = 'https://tvk-2026.vercel.app' + (location.hash || '');
+  const text = lang==='ta'
+    ? 'த.வெ.க. 2026 அறிக்கை — உங்கள் தொகுதி, வாக்குறுதி, பலன்கள் அனைத்தும் இங்கே'
+    : 'TVK 2026 — 234 seats, 50 promises, and your personal ₹ estimate';
+  // Native share sheet on mobile (offers WhatsApp, Instagram, etc.)
+  if (navigator.share) {
+    try { await navigator.share({title: 'TVK 2026', text, url}); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  openShareMenu(url, text);
+}
 
-  const cards = matches.map((p, i) => {
-    const v = PROMISE_VAL[p.id] || {yr: 0, impact: 5};
-    const c = CATS[p.c] || {c: '#ec4899'};
-    const loc = p[lang] || p.en;
-    const yrLabel = v.yr > 0
-      ? '₹' + v.yr.toLocaleString() + (lang==='ta'?'/ஆண்டு':'/yr')
-      : (lang==='ta' ? 'நேரடி நன்மை' : 'Direct benefit');
-    return `<section class="stk-card" style="background:linear-gradient(160deg,${c.c}25,${c.c}08 60%, transparent)">
-      <div class="stk-tag" style="background:${c.c}33;color:${c.c}">${catLabel(p.c)}</div>
-      <div class="stk-num">#${(i+1).toString().padStart(2,'0')}</div>
-      <div class="stk-title">${loc.t}</div>
-      <div class="stk-desc">${loc.d}</div>
-      <div class="stk-amt" style="color:${c.c}">${yrLabel}</div>
-    </section>`;
-  }).join('');
-
+function openShareMenu(url, text) {
+  const enc = encodeURIComponent(`${text} ${url}`);
   const html = `
-    <div class="stk-wrap" id="stkWrap">
-      <header class="stk-hd">
-        <button class="stk-close" onclick="closeStackShare()">✕</button>
-        <div class="stk-hd-ic">${icon}</div>
-        <div class="stk-hd-txt">
-          <small>${lang==='ta'?'உங்கள் அறிக்கை':'Your TVK Manifesto'}</small>
-          <b>${pLabel}</b>
-        </div>
-        <div class="stk-hd-total">
-          <span>${lang==='ta'?'மொத்தம்':'Total'}</span>
-          <b id="stkTotal">₹0</b>
-        </div>
-      </header>
-      <main class="stk-scroll" id="stkScroll">
-        <section class="stk-card stk-intro" style="background:linear-gradient(160deg,#e94560,#fbbf24)">
-          <div class="stk-intro-ic">${icon}</div>
-          <div class="stk-intro-t">${lang==='ta'?'த.வெ.க. 2026':'TVK 2026'}</div>
-          <div class="stk-intro-d">${lang==='ta'?'உங்களுக்கு என்ன கிடைக்கும்':'Here\'s what you unlock'}</div>
-          <div class="stk-intro-total">₹${total.toLocaleString()}<span>${lang==='ta'?'/ஆண்டு':'/year'}</span></div>
-          <div class="stk-intro-c">${matches.length} ${lang==='ta'?'நன்மைகள்':'benefits'}</div>
-          <div class="stk-intro-hint">${lang==='ta'?'கீழே உருட்டவும்':'Scroll ↓'}</div>
-        </section>
-        ${cards}
-        <section class="stk-card stk-end" style="background:linear-gradient(160deg,#0f0f1a,#1a1a2e)">
-          <div class="stk-end-t">${lang==='ta'?'₹':'₹'}${total.toLocaleString()}</div>
-          <div class="stk-end-d">${lang==='ta'?'ஒரு ஆண்டில் உங்களுக்குக் கிடைப்பவை':'yours, every year'}</div>
-          <button class="btn" onclick="doShareMyManifesto(${total})">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            ${lang==='ta'?'பகிர்':'Share'}
-          </button>
-          <button class="btn btn-ghost" onclick="closeStackShare()" style="margin-top:10px">${lang==='ta'?'மூடு':'Close'}</button>
-        </section>
-      </main>
+    <div class="share-menu" id="shareMenu" onclick="if(event.target===this)closeShareMenu()">
+      <div class="share-menu-box">
+        <div class="share-menu-title">${lang==='ta'?'பகிர்':'Share'}</div>
+        <a class="share-opt" href="https://wa.me/?text=${enc}" target="_blank" rel="noopener">
+          <span class="share-ic" style="background:#25D366">
+            <svg viewBox="0 0 24 24" fill="#fff" width="18" height="18"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.891-11.893 11.891a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.595 5.35l.093.148-.995 3.635 3.635-.954.161.096z"/></svg>
+          </span>
+          <span>WhatsApp</span>
+        </a>
+        <a class="share-opt" href="https://www.instagram.com/" target="_blank" rel="noopener" onclick="navigator.clipboard&&navigator.clipboard.writeText('${text.replace(/'/g,"\\'")} ${url}');toast('${(lang==='ta'?'இணைப்பு நகலெடுக்கப்பட்டது — Instagram-ல் ஒட்டவும்':'Link copied — paste into Instagram').replace(/'/g,"\\'")}')">
+          <span class="share-ic" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)">
+            <svg viewBox="0 0 24 24" fill="#fff" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </span>
+          <span>Instagram</span>
+        </a>
+        <button class="share-opt" onclick="copyShareLink('${url.replace(/'/g,"\\'")}')">
+          <span class="share-ic" style="background:var(--s3)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--t1)" stroke-width="2" width="18" height="18"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </span>
+          <span>${lang==='ta'?'இணைப்பை நகலெடு':'Copy link'}</span>
+        </button>
+        <button class="share-cancel" onclick="closeShareMenu()">${lang==='ta'?'ரத்து':'Cancel'}</button>
+      </div>
     </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
-  document.body.style.overflow = 'hidden';
-  document.getElementById('stkTotal').textContent = '₹' + total.toLocaleString();
-  // Fade in
-  requestAnimationFrame(() => document.getElementById('stkWrap').classList.add('on'));
+  requestAnimationFrame(() => document.getElementById('shareMenu').classList.add('on'));
 }
 
-function closeStackShare() {
-  const w = document.getElementById('stkWrap');
-  if (!w) return;
-  w.classList.remove('on');
-  document.body.style.overflow = '';
-  setTimeout(() => w.remove(), 260);
+function closeShareMenu() {
+  const el = document.getElementById('shareMenu');
+  if (!el) return;
+  el.classList.remove('on');
+  setTimeout(() => el.remove(), 200);
 }
 
-async function doShareMyManifesto(total) {
-  const txt = (lang==='ta'
-    ? `த.வெ.க. 2026 அறிக்கையில் எனக்கு ₹${total.toLocaleString()}/ஆண்டு கிடைக்கும். உங்களுக்கு எவ்வளவு?`
-    : `TVK 2026 manifesto unlocks ₹${total.toLocaleString()}/yr for me. What's yours?`);
-  const url = 'https://tvk-2026.vercel.app';
-  try {
-    if (navigator.share) { await navigator.share({title:'TVK 2026', text: txt, url}); return; }
-  } catch(e){}
-  try { await navigator.clipboard.writeText(`${txt} ${url}`); toast(t('share_copied') || 'Copied'); }
-  catch(e){ prompt('Copy:', `${txt} ${url}`); }
+async function copyShareLink(url) {
+  try { await navigator.clipboard.writeText(url); toast(t('share_copied') || 'Link copied'); }
+  catch(e) { prompt('Copy:', url); }
+  closeShareMenu();
 }

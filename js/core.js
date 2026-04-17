@@ -143,14 +143,13 @@ function toast(msg) {
   el._to = setTimeout(() => el.classList.remove('on'), 2000);
 }
 
-// ─── SHARE ───
-async function doShare() {
+// ─── SHARE (delegates to shareTVK in myman.js — native sheet + WA/IG fallback) ───
+function doShare() {
+  if (typeof shareTVK === 'function') { shareTVK(); return; }
+  // Minimal fallback if myman.js hasn't loaded yet
   const url = location.href;
-  try {
-    if (navigator.share) { await navigator.share({ title: 'TVK 2026 Dashboard', url }); return; }
-  } catch(e) {}
-  try { await navigator.clipboard.writeText(url); toast(t('share_copied')); }
-  catch(e) { prompt('Copy link:', url); }
+  if (navigator.share) navigator.share({ title: 'TVK 2026', url }).catch(()=>{});
+  else navigator.clipboard?.writeText(url).then(() => toast(t('share_copied')));
 }
 
 // ─── URL STATE ───
