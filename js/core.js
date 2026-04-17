@@ -22,7 +22,7 @@ const OVS = [
   { k: 'battle',  l: 'Battlegrounds', ta: 'போர்க்களம்', c: '#ef4444' },
   { k: 'winner',  l: '2021 Winner',   ta: '2021 வெற்றி', c: '#e11d48' },
   { k: 'voters',  l: 'Voters',        ta: 'வாக்காளர்',   c: '#6366f1' },
-  { k: 'vijay',   l: 'TVK Seats',     ta: 'தி.வெ.க.',   c: '#f59e0b' }
+  { k: 'vijay',   l: 'TVK Seats',     ta: 'த.வெ.க.',   c: '#f59e0b' }
 ];
 
 // ─── HELPERS ───

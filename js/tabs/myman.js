@@ -318,7 +318,7 @@ function openStackShare(personaKey) {
       <main class="stk-scroll" id="stkScroll">
         <section class="stk-card stk-intro" style="background:linear-gradient(160deg,#e94560,#fbbf24)">
           <div class="stk-intro-ic">${icon}</div>
-          <div class="stk-intro-t">${lang==='ta'?'தி.வெ.க. 2026':'TVK 2026'}</div>
+          <div class="stk-intro-t">${lang==='ta'?'த.வெ.க. 2026':'TVK 2026'}</div>
           <div class="stk-intro-d">${lang==='ta'?'உங்களுக்கு என்ன கிடைக்கும்':'Here\'s what you unlock'}</div>
           <div class="stk-intro-total">₹${total.toLocaleString()}<span>${lang==='ta'?'/ஆண்டு':'/year'}</span></div>
           <div class="stk-intro-c">${matches.length} ${lang==='ta'?'நன்மைகள்':'benefits'}</div>
@@ -353,7 +353,7 @@ function closeStackShare() {
 
 async function doShareMyManifesto(total) {
   const txt = (lang==='ta'
-    ? `தி.வெ.க. 2026 அறிக்கையில் எனக்கு ₹${total.toLocaleString()}/ஆண்டு கிடைக்கும். உங்களுக்கு எவ்வளவு?`
+    ? `த.வெ.க. 2026 அறிக்கையில் எனக்கு ₹${total.toLocaleString()}/ஆண்டு கிடைக்கும். உங்களுக்கு எவ்வளவு?`
     : `TVK 2026 manifesto unlocks ₹${total.toLocaleString()}/yr for me. What's yours?`);
   const url = 'https://tvk-2026.vercel.app';
   try {

@@ -18,7 +18,7 @@ const PARTY={
   NTK:    {c:'#a855f7', en:'NTK',     ta:'நாதக'},
   AMMK:   {c:'#0891b2', en:'AMMK',    ta:'அமமக'},
   IUML:   {c:'#059669', en:'IUML',    ta:'இந்திய ஒன்றிய முஸ்லிம் லீக்'},
-  TVK:    {c:'#ff1744', en:'TVK',     ta:'தி.வெ.க.'},
+  TVK:    {c:'#ff1744', en:'TVK',     ta:'த.வெ.க.'},
   IND:    {c:'#6b7280', en:'Ind',     ta:'சுயேட்சை'},
   OTH:    {c:'#64748b', en:'Other',   ta:'பிற'}
 };

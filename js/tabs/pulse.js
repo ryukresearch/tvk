@@ -30,7 +30,7 @@ function buildPulse() {
     <div class="dashboard-title">
       <div class="dashboard-title-logo"><svg viewBox="0 0 42 42" aria-hidden="true"><defs><clipPath id="dl-clip"><circle cx="21" cy="21" r="21"/></clipPath></defs><g clip-path="url(#dl-clip)"><rect x="0" y="0" width="42" height="21" fill="#e94560"/><rect x="0" y="21" width="42" height="21" fill="#fbbf24"/></g><circle cx="21" cy="21" r="20.5" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/></svg></div>
       <div class="dashboard-title-text">
-        <h1>${lang==='ta' ? 'தி.வெ.க. டாஷ்போர்டு' : 'TVK Dashboard'}</h1>
+        <h1>${lang==='ta' ? 'த.வெ.க. டாஷ்போர்டு' : 'TVK Dashboard'}</h1>
         <p>${lang==='ta' ? 'தமிழக வெற்றிக் கழகம் · 2026' : 'Tamilaga Vettri Kazhagam · 2026'}</p>
       </div>
     </div>
@@ -55,7 +55,7 @@ function buildPulse() {
     <div class="benefit-hero" onclick="openMyManifestoQuiz()">
       <div class="benefit-hero-l">
         <div class="benefit-hero-eyebrow">${lang==='ta'?'தனிப்பயன் கணிப்பு':'PERSONAL ESTIMATE'}</div>
-        <div class="benefit-hero-t">${lang==='ta'?'தி.வெ.க. உங்களுக்கு என்ன தருகிறது':'How TVK Benefits You'}</div>
+        <div class="benefit-hero-t">${lang==='ta'?'த.வெ.க. உங்களுக்கு என்ன தருகிறது':'How TVK Benefits You'}</div>
         <div class="benefit-hero-s">${lang==='ta'?'3 கேள்விகள் · ஒரு ஆண்டில் உங்களுக்குக் கிடைக்கும் ₹ மதிப்பு':'3 questions · your personal ₹ unlock per year'}</div>
         <div class="benefit-hero-cta">${lang==='ta'?'தொடங்கு':'Start'} <span>→</span></div>
       </div>
