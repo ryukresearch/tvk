@@ -25,7 +25,14 @@ function buildPromises(){
         <div class="pers-txt"><b>${t(p.lk)}</b><small>${t(p.sk)}</small></div>
       </button>`).join('')}
     </div>
-    <div class="pg" id="promiseGrid"></div>
+    <div class="view-row">
+      <div class="view-toggle" id="promView">
+        <button class="vt on" data-v="const" onclick="setPromiseView('const')">${lang==='ta'?'நட்சத்திரம்':'Constellation'}</button>
+        <button class="vt" data-v="cards" onclick="setPromiseView('cards')">${lang==='ta'?'அட்டைகள்':'Cards'}</button>
+      </div>
+    </div>
+    <div id="constWrap" class="const-wrap"></div>
+    <div class="pg" id="promiseGrid" style="display:none"></div>
   </div>
 
   <div class="tab-sec">
@@ -39,18 +46,18 @@ function buildPromises(){
     <div class="sec-label">${t('money_label')}</div>
     <div class="sec-title">${t('money_title')}</div>
     <div class="tree">
-      <div class="trc big" style="background:linear-gradient(135deg,#b91c1c,#e94560)"><div class="a">₹15,000 Cr</div><div class="lb">MSME Credit Fund</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#7c3aed,#8b5cf6)"><div class="a">₹50L</div><div class="lb">MSME Subsidy</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#a855f7,#c084fc)"><div class="a">₹25L</div><div class="lb">Youth Loans</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#ec4899,#f472b6)"><div class="a">₹20L</div><div class="lb">Education Loans</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"><div class="a">₹10L</div><div class="lb">Weaver Insurance</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#10b981,#34d399)"><div class="a">₹5L</div><div class="lb">SHG Loans</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#06b6d4,#22d3ee)"><div class="a">₹30K/yr</div><div class="lb">Weaver Aid</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#ef4444,#f87171)"><div class="a">₹15K/yr</div><div class="lb">Education</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><div class="a">₹10K/yr</div><div class="lb">Farmer Aid</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#f97316,#fb923c)"><div class="a">₹4K/mo</div><div class="lb">Unemployed</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#d946ef,#e879f9)"><div class="a">₹2.5K/mo</div><div class="lb">Women</div></div>
-      <div class="trc" style="background:linear-gradient(135deg,#14b8a6,#2dd4bf)"><div class="a">₹3K/mo</div><div class="lb">Weaver Pension</div></div>
+      <div class="trc big tr-1"><div class="a">₹15,000 Cr</div><div class="lb">MSME Credit Fund</div></div>
+      <div class="trc tr-2"><div class="a">₹50L</div><div class="lb">MSME Subsidy</div></div>
+      <div class="trc tr-3"><div class="a">₹25L</div><div class="lb">Youth Loans</div></div>
+      <div class="trc tr-3"><div class="a">₹20L</div><div class="lb">Education Loans</div></div>
+      <div class="trc tr-4"><div class="a">₹10L</div><div class="lb">Weaver Insurance</div></div>
+      <div class="trc tr-4"><div class="a">₹5L</div><div class="lb">SHG Loans</div></div>
+      <div class="trc tr-5"><div class="a">₹30K/yr</div><div class="lb">Weaver Aid</div></div>
+      <div class="trc tr-5"><div class="a">₹15K/yr</div><div class="lb">Education</div></div>
+      <div class="trc tr-5"><div class="a">₹10K/yr</div><div class="lb">Farmer Aid</div></div>
+      <div class="trc tr-6"><div class="a">₹4K/mo</div><div class="lb">Unemployed</div></div>
+      <div class="trc tr-6"><div class="a">₹2.5K/mo</div><div class="lb">Women</div></div>
+      <div class="trc tr-6"><div class="a">₹3K/mo</div><div class="lb">Weaver Pension</div></div>
     </div>
   </div>
 
@@ -59,12 +66,12 @@ function buildPromises(){
     <div class="sec-title">${t('pay_title')}</div>
     <div class="pay-grid">
       ${[
-        {l:'Weaver Aid',a:'₹30,000',u:'/yr',c:'#06b6d4'},{l:'Education',a:'₹15,000',u:'/yr',c:'#a855f7'},
-        {l:'Intern',a:'₹10,000',u:'/mo',c:'#3b82f6'},{l:'Farmer',a:'₹10,000',u:'/yr',c:'#10b981'},
-        {l:'IT Intern',a:'₹8,000',u:'/mo',c:'#60a5fa'},{l:'Grad Aid',a:'₹4,000',u:'/mo',c:'#6366f1'},
-        {l:'Weaver Pen.',a:'₹3,000',u:'/mo',c:'#0891b2'},{l:'Women',a:'₹2,500',u:'/mo',c:'#ec4899'},
-        {l:'Diploma',a:'₹2,000',u:'/mo',c:'#818cf8'},{l:'Police',a:'₹1,000',u:'/mo',c:'#ef4444'}
-      ].map(p=>`<div class="pay"><div class="pay-amt" style="color:${p.c}">${p.a}</div><div class="pay-lbl">${p.l} ${p.u}</div></div>`).join('')}
+        {l:'Weaver Aid',a:'₹30,000',u:'/yr'},{l:'Education',a:'₹15,000',u:'/yr'},
+        {l:'Intern',a:'₹10,000',u:'/mo'},{l:'Farmer',a:'₹10,000',u:'/yr'},
+        {l:'IT Intern',a:'₹8,000',u:'/mo'},{l:'Grad Aid',a:'₹4,000',u:'/mo'},
+        {l:'Weaver Pen.',a:'₹3,000',u:'/mo'},{l:'Women',a:'₹2,500',u:'/mo'},
+        {l:'Diploma',a:'₹2,000',u:'/mo'},{l:'Police',a:'₹1,000',u:'/mo'}
+      ].map(p=>`<div class="pay"><div class="pay-amt">${p.a}</div><div class="pay-lbl">${p.l} ${p.u}</div></div>`).join('')}
     </div>
   </div>
 
@@ -80,6 +87,24 @@ function buildPromises(){
   renderPromiseCards();
   renderH2H();
   renderBA();
+  // Default: render constellation view
+  renderConstellation('constWrap', persona);
+}
+
+let promiseView = 'const';
+function setPromiseView(v){
+  promiseView = v;
+  document.querySelectorAll('#promView .vt').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  const cw = document.getElementById('constWrap');
+  const pg = document.getElementById('promiseGrid');
+  if (v === 'const') {
+    cw.style.display = '';
+    pg.style.display = 'none';
+    renderConstellation('constWrap', persona);
+  } else {
+    cw.style.display = 'none';
+    pg.style.display = '';
+  }
 }
 
 function setPersona(k){
@@ -87,6 +112,7 @@ function setPersona(k){
   document.querySelectorAll('.pers').forEach(b=>b.classList.remove('on'));
   document.querySelector(`.pers[onclick="setPersona('${k}')"]`)?.classList.add('on');
   renderPromiseCards();
+  if (promiseView === 'const') renderConstellation('constWrap', persona);
   updateURL();
 }
 

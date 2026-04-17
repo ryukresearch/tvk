@@ -7,17 +7,17 @@
 function buildPulse() {
   const el = document.getElementById('tab0');
 
-  // Top 3 promises (hardcoded picks — most headline-worthy)
+  // Top 3 promises — categories used for small colored dots only (no full gradients)
   const big3 = [
-    { id:'w-stipend', bg:'linear-gradient(135deg,#be185d,#ec4899)', num:'01',
+    { id:'w-stipend', cat:'women', num:'01',
       title: lang==='ta' ? 'ஒவ்வொரு பெண் தலைவிக்கும் ₹2,500/மாதம்' : '₹2,500/mo to every woman head of family',
       desc:  lang==='ta' ? '60 வயது வரை. ~2.6 கோடி பெண்களுக்குப் பயனளிக்கும். ஆண்டு செலவு ~₹78K கோடி.' : 'Up to age 60. Benefits ~2.6Cr women. Est. annual cost ~₹78K Cr.',
       metric:'₹2,500' },
-    { id:'y-jobs', bg:'linear-gradient(135deg,#1e40af,#3b82f6)', num:'02',
+    { id:'y-jobs', cat:'youth', num:'02',
       title: lang==='ta' ? '75% உள்ளூர் வேலை சட்டம்' : '75% local jobs law',
       desc:  lang==='ta' ? 'தமிழ்நாட்டில் 75% வேலைகள் உள்ளூர்வாசிகளுக்கு. AP சட்டம் 2023-ல் ரத்தானது — நீதிமன்ற சவால் வரும்.' : '75% of TN jobs for locals. AP struck down in 2023 — court challenge likely.',
       metric:'75%' },
-    { id:'msme-fund', bg:'linear-gradient(135deg,#b45309,#f59e0b)', num:'03',
+    { id:'msme-fund', cat:'msme', num:'03',
       title: lang==='ta' ? '₹15,000 கோடி MSME நிதி' : '₹15,000 Cr MSME credit fund',
       desc:  lang==='ta' ? 'மாநில கடன் உத்தரவாதம். TN FY26 பற்றாக்குறை ₹52K கோடி — நிதி வெளியீடு கடினம்.' : 'State credit guarantee. TN FY26 deficit is ₹52K Cr — funding is tight.',
       metric:'₹15K Cr' }
@@ -52,14 +52,24 @@ function buildPulse() {
       </button>
     </div>
 
+    <div class="benefit-hero" onclick="openMyManifestoQuiz()">
+      <div class="benefit-hero-l">
+        <div class="benefit-hero-eyebrow">${lang==='ta'?'தனிப்பயன் கணிப்பு':'PERSONAL ESTIMATE'}</div>
+        <div class="benefit-hero-t">${lang==='ta'?'தி.வெ.க. உங்களுக்கு என்ன தருகிறது':'How TVK Benefits You'}</div>
+        <div class="benefit-hero-s">${lang==='ta'?'3 கேள்விகள் · ஒரு ஆண்டில் உங்களுக்குக் கிடைக்கும் ₹ மதிப்பு':'3 questions · your personal ₹ unlock per year'}</div>
+        <div class="benefit-hero-cta">${lang==='ta'?'தொடங்கு':'Start'} <span>→</span></div>
+      </div>
+      <div class="benefit-hero-r" aria-hidden="true"></div>
+    </div>
+
     <div class="p-hook">${t('hook_pulse')}</div>
     <div class="p-headline">${t('headline_1')}<br><em>${t('headline_2')}</em></div>
     <div class="p-sub">${t('sub_pulse')}</div>
     <div class="big-num-grid">
-      <div class="big-num" style="--bg-accent:var(--red)"><div class="n count-up" data-to="234">0</div><div class="l">${t('bn_seats')}</div><div class="s">${t('bn_seats_s')}</div></div>
-      <div class="big-num" style="--bg-accent:var(--purple)"><div class="n count-up" data-to="50">0</div><div class="l">${t('bn_promises')}</div><div class="s">${t('bn_promises_s')}</div></div>
-      <div class="big-num" style="--bg-accent:var(--orange)"><div class="n">₹15K<span style="font-size:.6em"> Cr</span></div><div class="l">${t('bn_cr')}</div><div class="s">${t('bn_cr_s')}</div></div>
-      <div class="big-num" style="--bg-accent:var(--pink)"><div class="n">₹2,500</div><div class="l">${t('bn_women')}</div><div class="s">${t('bn_women_s')}</div></div>
+      <div class="big-num"><div class="n count-up" data-to="234">0</div><div class="l">${t('bn_seats')}</div><div class="s">${t('bn_seats_s')}</div></div>
+      <div class="big-num"><div class="n count-up" data-to="50">0</div><div class="l">${t('bn_promises')}</div><div class="s">${t('bn_promises_s')}</div></div>
+      <div class="big-num"><div class="n">₹15K<span style="font-size:.6em"> Cr</span></div><div class="l">${t('bn_cr')}</div><div class="s">${t('bn_cr_s')}</div></div>
+      <div class="big-num"><div class="n">₹2,500</div><div class="l">${t('bn_women')}</div><div class="s">${t('bn_women_s')}</div></div>
     </div>
   </div>
 
@@ -67,12 +77,15 @@ function buildPulse() {
     <div class="sec-label">${t('big3_label')}</div>
     <div class="sec-title">${t('big3_title')}</div>
     <div class="hero-promises">
-      ${big3.map(p => `<div class="hp" style="background:${p.bg}" onclick="openPromiseById('${p.id}')">
-        <div class="hp-num">PROMISE ${p.num}</div>
-        <div class="hp-title">${p.title}</div>
-        <div class="hp-desc">${p.desc}</div>
-        <div class="hp-metric">${p.metric}</div>
-      </div>`).join('')}
+      ${big3.map(p => {
+        const cc = (CATS[p.cat] && CATS[p.cat].c) || '#e94560';
+        return `<div class="hp" style="--cat:${cc}" onclick="openPromiseById('${p.id}')">
+          <div class="hp-num"><span class="hp-dot" style="background:${cc}"></span>PROMISE ${p.num}</div>
+          <div class="hp-title">${p.title}</div>
+          <div class="hp-desc">${p.desc}</div>
+          <div class="hp-metric">${p.metric}</div>
+        </div>`;
+      }).join('')}
     </div>
   </div>
 
@@ -88,7 +101,7 @@ function buildPulse() {
         <div class="vjy-stats">
           <div class="vjy-stat"><b>${fmt(c.vt)}</b><small>${t('vjy_stat_voters')}</small></div>
           <div class="vjy-stat"><b>${fmt(c.m21)}</b><small>${t('vjy_stat_margin')}</small></div>
-          <div class="vjy-stat"><b style="color:${c.m21<15000?'#ef4444':'#10b981'}">${c.m21<15000?(lang==='ta'?'போர்':'BATTLE'):(lang==='ta'?'பாதுகாப்பு':'SAFE')}</b><small>${t('vjy_stat_cat')}</small></div>
+          <div class="vjy-stat"><b style="color:${c.m21<15000?'var(--red)':'var(--t1)'}">${c.m21<15000?(lang==='ta'?'போர்':'BATTLE'):(lang==='ta'?'பாதுகாப்பு':'SAFE')}</b><small>${t('vjy_stat_cat')}</small></div>
         </div>
       </div>`).join('')}
     </div>
@@ -107,10 +120,10 @@ function buildPulse() {
     <div class="sec-label">${t('first_label')}</div>
     <div class="sec-title">${t('first_title')}</div>
     <div class="mini-tl">
-      <div class="mtl" style="--bg-accent:#ef4444"><b>${lang==='ta'?'நாள் 1':'DAY 1'}</b><p>${lang==='ta'?'பேருந்துப் பயணம் இலவசம்':'Free bus travel'}</p><small>${lang==='ta'?'நிர்வாக உத்தரவு':'Executive order'}</small></div>
-      <div class="mtl" style="--bg-accent:#f59e0b"><b>${lang==='ta'?'30 நாள்':'30 DAYS'}</b><p>${lang==='ta'?'காவல்துறை சம்பள உயர்வு':'Police salary hike'}</p><small>₹18.2K → ₹25K</small></div>
-      <div class="mtl" style="--bg-accent:#6366f1"><b>${lang==='ta'?'3 மாதம்':'3 MONTHS'}</b><p>${lang==='ta'?'₹2,500 பெண்கள் உதவி':'₹2,500 women stipend'}</p><small>${lang==='ta'?'~2.6 கோடி பயனாளிகள்':'~2.6Cr beneficiaries'}</small></div>
-      <div class="mtl" style="--bg-accent:#10b981"><b>${lang==='ta'?'1 ஆண்டு':'1 YEAR'}</b><p>${lang==='ta'?'விவசாயக் கடன் தள்ளுபடி':'Farm loan waiver'}</p><small>${lang==='ta'?'~72 லட்சம் குடும்பங்கள்':'~72L households'}</small></div>
+      <div class="mtl"><b>${lang==='ta'?'நாள் 1':'DAY 1'}</b><p>${lang==='ta'?'பேருந்துப் பயணம் இலவசம்':'Free bus travel'}</p><small>${lang==='ta'?'நிர்வாக உத்தரவு':'Executive order'}</small></div>
+      <div class="mtl"><b>${lang==='ta'?'30 நாள்':'30 DAYS'}</b><p>${lang==='ta'?'காவல்துறை சம்பள உயர்வு':'Police salary hike'}</p><small>₹18.2K → ₹25K</small></div>
+      <div class="mtl"><b>${lang==='ta'?'3 மாதம்':'3 MONTHS'}</b><p>${lang==='ta'?'₹2,500 பெண்கள் உதவி':'₹2,500 women stipend'}</p><small>${lang==='ta'?'~2.6 கோடி பயனாளிகள்':'~2.6Cr beneficiaries'}</small></div>
+      <div class="mtl"><b>${lang==='ta'?'1 ஆண்டு':'1 YEAR'}</b><p>${lang==='ta'?'விவசாயக் கடன் தள்ளுபடி':'Farm loan waiver'}</p><small>${lang==='ta'?'~72 லட்சம் குடும்பங்கள்':'~72L households'}</small></div>
     </div>
   </div>
 
