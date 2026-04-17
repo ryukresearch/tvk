@@ -238,14 +238,19 @@ function showDet() {
   if (res21) {
     const wp = PARTY[res21.wp] || PARTY.OTH;
     const rp = PARTY[res21.rp] || PARTY.OTH;
+    const winName = res21.wn ? `<div class="p21-wn">${res21.wn}</div>` : '';
+    const turnout = res21.pv ? `<span class="p21-turnout">${res21.pv}% ${lang==='ta'?'வாக்களிப்பு':'turnout'}</span>` : '';
+    const mpct = res21.mp ? `<span class="p21-mpct">· ${res21.mp}%</span>` : '';
     html2021 = `<div class="dc">
       <div class="demo-t">${t('result_2021')}</div>
+      ${winName}
       <div class="p21-row">
         <span class="p21-win" style="background:${wp.c}">${lang==='ta'?wp.ta:wp.en}</span>
-        <span class="p21-txt">${t('won_by')} <b>${res21.m.toLocaleString()}</b> ${t('votes_suffix')}</span>
+        <span class="p21-txt">${t('won_by')} <b>${res21.m.toLocaleString()}</b> ${t('votes_suffix')}${mpct}</span>
       </div>
       <div class="p21-row" style="margin-top:6px">
         <span class="p21-run" style="background:${rp.c}22;color:${rp.c};border:1px solid ${rp.c}55">2nd · ${lang==='ta'?rp.ta:rp.en}</span>
+        ${turnout}
       </div>
     </div>`;
   }

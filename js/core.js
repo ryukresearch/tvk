@@ -4,8 +4,8 @@
    ═══════════════════════════════════════════════════════════════ */
 
 // ─── STATE (global) ───
-let lang = localStorage.getItem('tvk-lang') || 'en';
-let theme = localStorage.getItem('tvk-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+let lang = localStorage.getItem('tvk-lang') || 'ta';
+let theme = localStorage.getItem('tvk-theme') || 'light';
 let activeTab = 0;
 let sel = null;         // selected constituency seat#
 let ov = 0;             // map overlay index
