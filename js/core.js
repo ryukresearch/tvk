@@ -71,7 +71,7 @@ function applyTheme() {
 function applyLang() {
   document.documentElement.setAttribute('lang', lang);
   document.body.setAttribute('lang', lang);
-  document.getElementById('langBtn').textContent = lang==='en' ? 'EN' : 'தமிழ்';
+  document.getElementById('langBtn').textContent = lang==='en' ? 'தமிழ்' : 'ENG';
   document.querySelectorAll('[data-t]').forEach(el => {
     const k = el.getAttribute('data-t');
     el.textContent = t(k);

@@ -7,7 +7,7 @@
 const I18N={
   en:{
     brand_title:"TVK 2026 Dashboard",brand_sub:"234 SEATS · WHISTLE REVOLUTION",
-    nav_label:"Navigate",tab_pulse:"Pulse",tab_promises:"Promises",tab_map:"Map",tab_candidates:"Candidates",
+    nav_label:"Navigate",tab_pulse:"Vetri",tab_promises:"Manifesto",tab_map:"Constituency",tab_candidates:"Candidates",
     // stats
     st_electorate:"Electorate",st_women:"Women",st_firsttime:"First-Time",st_youth:"Youth",st_battleground:"Battleground",
     // pulse
@@ -55,7 +55,7 @@ const I18N={
   },
   ta:{
     brand_title:"த.வெ.க. 2026 டாஷ்போர்டு",brand_sub:"234 தொகுதிகள் · வெற்றிப் புரட்சி",
-    nav_label:"செல்லவும்",tab_pulse:"துடிப்பு",tab_promises:"வாக்குறுதிகள்",tab_map:"வரைபடம்",tab_candidates:"வேட்பாளர்கள்",
+    nav_label:"செல்லவும்",tab_pulse:"வெற்றி",tab_promises:"அறிக்கை",tab_map:"தொகுதி",tab_candidates:"வேட்பாளர்கள்",
     st_electorate:"வாக்காளர்கள்",st_women:"பெண்கள்",st_firsttime:"புதிய வாக்காளர்",st_youth:"இளைஞர்",st_battleground:"போர்க்களம்",
     hook_pulse:"2026 பந்தயம்",
     headline_1:"50 வாக்குறுதிகள். 234 தொகுதிகள்.",headline_2:"எந்த கூட்டணியும் இல்லை.",

@@ -71,6 +71,37 @@ const PERSONA_ICON = {
   weaver: '🧵', all: '⭐'
 };
 
+// Short labels shown next to each constellation star (EN + TA). 1-3 words.
+const SHORT_LABEL = {
+  'w-stipend':{en:'₹2.5K women',ta:'₹2.5K பெண்'},'w-lpg':{en:'6 LPG/yr',ta:'6 LPG'},
+  'w-bus':{en:'Free bus',ta:'இலவச பேருந்து'},'w-force':{en:'Women force',ta:'பெண் படை'},
+  'w-education':{en:'₹15K edu',ta:'₹15K கல்வி'},'w-safety':{en:'5-min safety',ta:'5நிமிட பாதுகாப்பு'},
+  'w-marriage':{en:'Gold gift',ta:'தங்க பரிசு'},'w-courts':{en:'Fast courts',ta:'விரைவு நீதி'},
+  'w-pads':{en:'Free pads',ta:'இலவச நாப்கின்'},'w-shg':{en:'SHG ₹5L',ta:'SHG ₹5L'},
+  'w-baby':{en:'Baby kit',ta:'குழந்தை கிட்'},'w-dept':{en:'Safety dept',ta:'பாதுகாப்பு துறை'},
+  'y-unemployment':{en:'₹4K/mo grad',ta:'₹4K பட்டதாரி'},'y-edu-loan':{en:'Edu loan ₹20L',ta:'கல்வி கடன்'},
+  'y-interns':{en:'5L interns',ta:'5L பயிற்சி'},'y-startup':{en:'₹25L startup',ta:'₹25L ஸ்டார்ட்அப்'},
+  'y-jobs':{en:'75% local law',ta:'75% உள்ளூர்'},'y-creative':{en:'Creators 1.5L',ta:'கலை தொழில்'},
+  'y-service':{en:'Panchayat jobs',ta:'பஞ்சாயத்து'},'y-drug':{en:'Drug-free TN',ta:'போதை இல்லா'},
+  'y-council':{en:'Youth council',ta:'இளைஞர் குழு'},
+  'f-waiver-small':{en:'Loan waiver',ta:'கடன் தள்ளுபடி'},'f-waiver-large':{en:'Loan 50% off',ta:'கடன் 50%'},
+  'f-msp-paddy':{en:'Paddy ₹3,500',ta:'நெல் ₹3,500'},'f-msp-sugar':{en:'Sugar ₹4,500',ta:'கரும்பு ₹4,500'},
+  'f-annual':{en:'Farm ₹10K/yr',ta:'விவசாய ₹10K'},'f-kids-edu':{en:'Farmer kids edu',ta:'விவசாய கல்வி'},
+  'f-fair':{en:'Fair procurement',ta:'நியாய கொள்முதல்'},'f-ration':{en:'Ration density',ta:'ரேஷன் அடர்'},
+  'msme-fund':{en:'₹15,000 Cr fund',ta:'₹15K Cr நிதி'},'msme-subsidy':{en:'35% MSME',ta:'35% மானியம்'},
+  'msme-tax':{en:'Power tax off',ta:'மின் வரி'},'msme-peak':{en:'No peak tariff',ta:'உச்சம் இல்லா'},
+  'wv-aid':{en:'₹30K weaver',ta:'₹30K நெசவாளர்'},'wv-power':{en:'Free units',ta:'இலவச மின்'},
+  'wv-input':{en:'50% inputs',ta:'50% உள்ளீடு'},'wv-insurance':{en:'₹10L cover',ta:'₹10L காப்பீடு'},
+  'wv-pension':{en:'₹3K pension',ta:'₹3K ஓய்வூதியம்'},'wv-ecom':{en:'E-commerce',ta:'மின்வர்த்தகம்'},
+  'wv-showroom':{en:'Showrooms',ta:'அங்காடிகள்'},
+  'p-salary':{en:'Police ₹25K',ta:'காவல் ₹25K'},'p-stress':{en:'Stress ₹1K',ta:'அழுத்த ₹1K'},
+  'p-women':{en:'Women facilities',ta:'பெண் வசதி'},
+  'ge-ops':{en:'Old pension',ta:'பழைய ஓய்வூ'},'ge-regularize':{en:'Regularize',ta:'நிரந்தரம்'},
+  'ge-exams':{en:'TNPSC schedule',ta:'TNPSC'},
+  'g-white':{en:'White papers',ta:'வெள்ளை அறிக்'},'g-pillars':{en:'6 pillars',ta:'6 தூண்கள்'},
+  'g-impl':{en:'Execute first',ta:'செயல்பாடு'},'g-secular':{en:'Secular',ta:'மதச்சார்பற்ற'}
+};
+
 // ─── CONSTELLATION ───
 function renderConstellation(containerId, personaKey) {
   const el = document.getElementById(containerId);
@@ -85,6 +116,8 @@ function renderConstellation(containerId, personaKey) {
   const N = matches.length;
   const cx = 200, cy = 200;
   const baseR = 105;
+  const isMob = window.innerWidth < 768;
+  const filledMax = isMob ? (lang === 'ta' ? 4 : 6) : (lang === 'ta' ? 13 : 15);
   const stars = matches.map((p, i) => {
     const v = PROMISE_VAL[p.id] || {yr: 0, impact: 5};
     const ring = i % 3;
@@ -94,7 +127,15 @@ function renderConstellation(containerId, personaKey) {
     const y = cy + Math.sin(angle) * r;
     const size = 3.5 + (v.impact / 10) * 7;
     const color = (CATS[p.c] && CATS[p.c].c) || '#ec4899';
-    return {p, x, y, size, color, v};
+    const lbl = SHORT_LABEL[p.id];
+    const labelTxt = lbl ? (lang === 'ta' ? lbl.ta : lbl.en) : '';
+    // Push label outward from center along the star's radial direction
+    const dx = x - cx, dy = y - cy, dd = Math.hypot(dx, dy) || 1;
+    const lx = x + (dx / dd) * (size + 10);
+    const ly = y + (dy / dd) * (size + 10) + 3;
+    const anchor = lx < cx - 8 ? 'end' : lx > cx + 8 ? 'start' : 'middle';
+    const filled = i < filledMax;
+    return {p, x, y, size, color, v, labelTxt, lx, ly, anchor, filled};
   });
 
   const totalYr = stars.reduce((s, st) => s + (st.v.yr || 0), 0);
@@ -135,6 +176,9 @@ function renderConstellation(containerId, personaKey) {
             <circle r="${s.size * 0.4}" fill="#fff" opacity="0.85"/>
           </g>
         `).join('')}
+        ${stars.map((s, i) => s.labelTxt ? `
+          <text class="const-label ${s.filled?'filled':'outline'}" data-i="${i}" data-id="${s.p.id}" x="${s.lx.toFixed(1)}" y="${s.ly.toFixed(1)}" text-anchor="${s.anchor}">${s.labelTxt}</text>
+        ` : '').join('')}
         <g transform="translate(${cx},${cy})">
           <circle r="30" fill="rgba(8,8,15,0.9)" stroke="#e94560" stroke-width="1.5"/>
           <circle r="34" fill="none" stroke="#fbbf24" stroke-width="0.5" opacity="0.5"/>
@@ -150,17 +194,20 @@ function renderConstellation(containerId, personaKey) {
     </div>
   `;
 
-  // Click handlers for stars
-  el.querySelectorAll('.const-star').forEach(g => {
+  // Click handlers for stars AND labels → open promise modal
+  el.querySelectorAll('.const-star, .const-label').forEach(g => {
     g.addEventListener('click', () => {
       const id = g.dataset.id;
       if (typeof showPromiseModal === 'function') showPromiseModal(id);
     });
   });
 
-  // Animate activation: thread draws + star pops + counter ticks
+  // Animate activation: thread draws + star pops + label fades + counter ticks
   const threads = el.querySelectorAll('.const-thread');
   const starEls = el.querySelectorAll('.const-star');
+  const labelEls = el.querySelectorAll('.const-label');
+  const labelByIdx = {};
+  labelEls.forEach(l => { labelByIdx[+l.dataset.i] = l; });
   const counterN = el.querySelector('#constN');
   const counterC = el.querySelector('#constCount');
   let cumulative = 0;
@@ -173,6 +220,8 @@ function renderConstellation(containerId, personaKey) {
       const star = starEls[i];
       star.style.transition = 'transform 380ms cubic-bezier(.18,1.2,.42,1.02)';
       star.setAttribute('transform', `translate(${s.x},${s.y}) scale(1)`);
+      const lab = labelByIdx[i];
+      if (lab) setTimeout(() => { lab.style.opacity = ''; lab.classList.add('on'); }, 200);
       cumulative += s.v.yr || 0;
       counterN.textContent = '₹' + cumulative.toLocaleString();
       counterC.textContent = `${i + 1} ${lang==='ta'?'நன்மைகள்':'benefits'}`;

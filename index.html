@@ -6,9 +6,11 @@
 <meta name="theme-color" content="#0a0a12">
 <meta name="description" content="TVK 2026 Dashboard — Interactive explorer of Tamilaga Vettri Kazhagam's manifesto, 234 candidates, and constituency battleground map.">
 <title>TVK 2026 · Dashboard</title>
+<link rel="icon" type="image/jpeg" href="assets/tvk-logo.jpg">
+<link rel="apple-touch-icon" href="assets/tvk-logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="css/styles.css?v=25">
+<link rel="stylesheet" href="css/styles.css?v=31">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M94KW1MYW0"></script>
 <script>
@@ -23,13 +25,13 @@
   <!-- ══ HEADER ══ -->
   <div class="hdr">
     <div class="hdr-top">
-      <div class="brand">
+      <a href="#tab=0" class="brand" onclick="event.preventDefault();switchTab(0)" aria-label="Home">
         <div class="logo"><img src="assets/tvk-logo.jpg?v=2" alt="TVK" loading="eager" decoding="async"></div>
         <div class="brand-text">
           <h1 data-t="brand_title">TVK 2026 Dashboard</h1>
           <p data-t="brand_sub">234 SEATS · WHISTLE REVOLUTION</p>
         </div>
-      </div>
+      </a>
       <div class="hdr-tools">
         <button class="tool-btn lang-btn" onclick="toggleLang()" id="langBtn" title="Language">EN</button>
         <button class="tool-btn" onclick="toggleTheme()" id="themeBtn" title="Theme">
@@ -50,15 +52,15 @@
       <div class="side-nav">
         <button class="side-item on" onclick="switchTab(0)" data-idx="0">
           <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          <span data-t="tab_pulse">Pulse</span><span class="kbd">1</span>
+          <span data-t="tab_pulse">Vetri</span><span class="kbd">1</span>
         </button>
         <button class="side-item" onclick="switchTab(1)" data-idx="1">
           <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <span data-t="tab_promises">Promises</span><span class="kbd">2</span>
+          <span data-t="tab_promises">Manifesto</span><span class="kbd">2</span>
         </button>
         <button class="side-item" onclick="switchTab(2)" data-idx="2">
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span data-t="tab_map">Map</span><span class="kbd">3</span>
+          <span data-t="tab_map">Constituency</span><span class="kbd">3</span>
         </button>
         <button class="side-item" onclick="switchTab(3)" data-idx="3">
           <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
@@ -66,10 +68,17 @@
         </button>
       </div>
       <div class="side-foot">
+        <div class="tvk-official">
+          <div class="foot-label">OFFICIAL TVK</div>
+          <div class="tvk-links">
+            <a href="https://tvkvijay.com/en/contact-us" target="_blank" rel="noopener noreferrer" title="Contact TVK">tvkvijay.com</a>
+            <a href="https://x.com/TVKPartyHQ" target="_blank" rel="noopener noreferrer" title="TVK on X">@TVKPartyHQ</a>
+            <a href="https://www.instagram.com/tvkvijayhq" target="_blank" rel="noopener noreferrer" title="TVK on Instagram">@tvkvijayhq</a>
+          </div>
+        </div>
+        <div class="foot-sep"></div>
         <a href="https://x.com/ryuk_nl" target="_blank" rel="noopener noreferrer">made by <span>RYUK</span></a>
-        <a class="ig-link" href="https://instagram.com/anbu_lenin" target="_blank" rel="noopener noreferrer">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:11px;height:11px;vertical-align:-1px;margin-right:3px"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>@anbu_lenin
-        </a>
+        <a class="ig-link" href="https://instagram.com/anbu_lenin" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg><span>@anbu_lenin</span></a>
         <span class="foot-dm">DM for suggestions</span>
       </div>
     </aside>
@@ -86,15 +95,15 @@
   <div class="bnav">
     <button class="on" onclick="switchTab(0)">
       <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      <span data-t="tab_pulse">Pulse</span>
+      <span data-t="tab_pulse">Vetri</span>
     </button>
     <button onclick="switchTab(1)">
       <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      <span data-t="tab_promises">Promises</span>
+      <span data-t="tab_promises">Manifesto</span>
     </button>
     <button onclick="switchTab(2)">
       <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span data-t="tab_map">Map</span>
+      <span data-t="tab_map">Constituency</span>
     </button>
     <button onclick="switchTab(3)">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
@@ -114,6 +123,7 @@
 <script src="js/data/constituencies.js"></script>
 <script src="js/data/promises.js"></script>
 <script src="js/data/elections.js"></script>
+<script src="js/data/opponents.js"></script>
 <script src="js/data/i18n.js"></script>
 <!-- 2. Tab builders (must load before core.js init) -->
 <script src="js/tabs/pulse.js"></script>

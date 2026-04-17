@@ -8,7 +8,7 @@ function buildMap() {
   <div class="home-wrap">
     <div class="map-area">
       <div class="map-bar">
-        <div class="m-search"><input type="search" placeholder="${lang==='ta'?'தொகுதி, வேட்பாளர் தேடுங்கள்...':'Search constituency, candidate...'}" oninput="filterMap(this.value)"></div>
+        <div class="m-search"><input type="search" id="mSearch" autocomplete="off" placeholder="${lang==='ta'?'தொகுதி பெயர் தேடவும்...':'Type or pick a constituency...'}" oninput="filterMap(this.value);mSug(this.value)" onfocus="mSug(this.value)" onblur="setTimeout(()=>{const s=document.getElementById('sugBox');if(s)s.style.display='none'},160)"><div id="sugBox" class="sug-box" hidden></div></div>
       </div>
       <div class="chip-row" id="ovChips"></div>
       <div class="ov-desc" id="ovDesc"></div>
@@ -54,17 +54,7 @@ function buildMap() {
   updateOvDesc();
   showDet();
 
-  // Flip list — top 10 tightest 2021 margins
-  const top = ALL.slice().sort((a, b) => a.m21 - b.m21).slice(0, 10);
-  const maxM = top[top.length-1].m21;
-  document.getElementById('flipList').innerHTML = top.map((c, i) =>
-    `<div class="flip-r" onclick="selectSeat(${c.n})">
-      <span class="rk">#${i+1}</span>
-      <span class="nm">${c.nm} · ${distName(c.di)}</span>
-      <div class="bar"><span style="width:${(c.m21/maxM)*100}%"></span></div>
-      <span class="mg">${fmt(c.m21)}</span>
-    </div>`
-  ).join('');
+  renderFlipList();
 
   // Strongholds stats (from elections.js aggregates)
   if (typeof strongholds !== 'undefined') {
@@ -208,11 +198,44 @@ function buildList(list) {
   ).join('') + (list.length>80 ? `<div style="font-size:10px;color:var(--t4);padding:8px;text-align:center">+ ${list.length-80} more</div>` : '');
 }
 
+function mSug(q) {
+  const box = document.getElementById('sugBox');
+  if (!box) return;
+  const ql = (q || '').trim().toLowerCase();
+  const list = ql ? ALL.filter(c => c.nm.toLowerCase().includes(ql) || DISTS[c.di].toLowerCase().includes(ql) || String(c.n) === ql) : ALL;
+  const show = list.slice(0, 60);
+  if (!show.length) { box.hidden = true; return; }
+  box.hidden = false;
+  box.style.display = 'block';
+  box.innerHTML = show.map(c => `<div class="sug-i" onmousedown="pickSug(${c.n})"><b>${c.nm}</b><span>#${c.n} · ${lang==='ta'?DISTS_TA[c.di]:DISTS[c.di]}${c.isV?' · VIJAY':''}</span></div>`).join('');
+}
+function pickSug(n) {
+  const c = ALL.find(x => x.n === n);
+  if (!c) return;
+  const inp = document.getElementById('mSearch'); if (inp) inp.value = c.nm;
+  document.getElementById('sugBox').hidden = true;
+  selectSeat(n);
+}
+
+function renderFlipList() {
+  const el = document.getElementById('flipList'); if (!el) return;
+  const top = ALL.slice().sort((a,b) => a.m21 - b.m21).slice(0, 10);
+  const maxM = top[top.length-1].m21;
+  el.innerHTML = top.map((c, i) =>
+    `<div class="flip-r ${sel===c.n?'on':''}" onclick="selectSeat(${c.n})">
+      <span class="rk">#${i+1}</span>
+      <span class="nm">${c.nm} · ${distName(c.di)}</span>
+      <div class="bar"><span style="width:${(c.m21/maxM)*100}%"></span></div>
+      <span class="mg">${fmt(c.m21)}</span>
+    </div>`).join('');
+}
+
 function selectSeat(n) {
   sel = n;
   drawMap(filtered || ALL);
   showDet();
   buildList(filtered || ALL);
+  renderFlipList();
   updateURL();
   if (window.innerWidth < 768) {
     setTimeout(() => document.getElementById('detP').scrollIntoView({behavior:'smooth',block:'start'}), 50);
@@ -230,7 +253,7 @@ function showDet() {
   if (!c) return;
   const mCol = c.m21 < 15000 ? '#ef4444' : '#10b981';
   const res21 = typeof P21 !== 'undefined' ? P21[c.n] : null;
-  const opp26 = typeof C26 !== 'undefined' ? (C26[c.nm] || {}) : {};
+  const opp26 = typeof OPP !== 'undefined' ? (OPP[c.n] || {}) : {};
   el.scrollTop = 0;
 
   // 2021 result block
@@ -255,17 +278,16 @@ function showDet() {
     </div>`;
   }
 
-  // 2026 opposition block — only if any party has announced
+  // 2026 opposition block — all announced parties, ordered by prominence
   let html2026 = '';
-  const oppEntries = [['DMK', opp26.dmk], ['AIADMK', opp26.admk], ['NTK', opp26.ntk]];
-  const hasAny = oppEntries.some(([_, n]) => n);
-  if (hasAny) {
+  const PARTY_ORDER = ['DMK','AIADMK','NTK','INC','BJP','PMK','VCK','AMMK','MDMK'];
+  const oppEntries = PARTY_ORDER.filter(pk => opp26[pk]).map(pk => [pk, opp26[pk]]);
+  if (oppEntries.length) {
     html2026 = `<div class="dc">
       <div class="demo-t">${t('opponents_2026')}</div>
       ${oppEntries.map(([pk, name]) => {
-        const p = PARTY[pk];
-        if (!name) return `<div class="opp-row"><span class="opp-p" style="background:${p.c}22;color:${p.c}">${lang==='ta'?p.ta:p.en}</span><span class="opp-n opp-tba">${t('tba')}</span></div>`;
-        return `<div class="opp-row"><span class="opp-p" style="background:${p.c}22;color:${p.c}">${lang==='ta'?p.ta:p.en}</span><span class="opp-n">${name}</span></div>`;
+        const p = PARTY[pk] || PARTY.OTH;
+        return `<div class="opp-row"><span class="party-flag" style="background:${p.c}">${lang==='ta'?p.ta:p.en}</span><span class="opp-n">${name}</span></div>`;
       }).join('')}
     </div>`;
   }
@@ -281,7 +303,7 @@ function showDet() {
       <div class="s-name">${c.nm}</div>
       <div class="s-dist">${distName(c.di)}</div>
       <div class="cand-box">
-        <div class="cb-label">${t('tvk_candidate')}</div>
+        <div class="cb-label"><span class="party-flag" style="background:${PARTY.TVK.c}">TVK</span> ${t('tvk_candidate')}</div>
         <div class="cb-name">${c.cd}</div>
         <div class="badges" style="margin-top:6px;margin-bottom:0">
           ${c.isW?'<span class="badge" style="background:#ec4899">WOMAN</span>':''}
