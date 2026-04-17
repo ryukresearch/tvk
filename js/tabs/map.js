@@ -11,6 +11,7 @@ function buildMap() {
         <div class="m-search"><input type="search" placeholder="${lang==='ta'?'தொகுதி, வேட்பாளர் தேடுங்கள்...':'Search constituency, candidate...'}" oninput="filterMap(this.value)"></div>
       </div>
       <div class="chip-row" id="ovChips"></div>
+      <div class="ov-desc" id="ovDesc"></div>
       <div class="map-box">
         <!-- viewBox tuned: tight left/right, generous vertical, aspect ~0.72 -->
         <svg id="mapSvg" viewBox="40 60 340 490" preserveAspectRatio="xMidYMid meet"></svg>
@@ -29,16 +30,16 @@ function buildMap() {
     </div>
   </div>
   <div class="tab-sec">
-    <div class="sec-label">${t('stronghold_label')}</div>
-    <div class="sec-title">${t('stronghold_title')}</div>
-    <div class="sec-desc">${t('stronghold_sub')}</div>
-    <div id="strongholds"></div>
-  </div>
-  <div class="tab-sec">
     <div class="sec-label">${t('flip_label')}</div>
     <div class="sec-title">${t('flip_title')}</div>
     <div class="sec-desc">${t('flip_sub')}</div>
     <div class="flip-list" id="flipList"></div>
+  </div>
+  <div class="tab-sec">
+    <div class="sec-label">${t('stronghold_label')}</div>
+    <div class="sec-title">${t('stronghold_title')}</div>
+    <div class="sec-desc">${t('stronghold_sub')}</div>
+    <div id="strongholds"></div>
   </div>
   <div class="tab-foot">made by <span>RYUK</span></div>`;
 
@@ -50,6 +51,7 @@ function buildMap() {
   drawMap(filtered || ALL);
   buildList(filtered || ALL);
   updateLeg();
+  updateOvDesc();
   showDet();
 
   // Flip list — top 10 tightest 2021 margins
@@ -105,6 +107,24 @@ function setOv(i) {
   });
   drawMap(filtered || ALL);
   updateLeg();
+  updateOvDesc();
+}
+
+function updateOvDesc() {
+  const el = document.getElementById('ovDesc');
+  if (!el) return;
+  const descs = lang === 'ta' ? [
+    'போர்க்களம்: 2021 வித்தியாசம் — சிவப்பு <15K · ஆரஞ்சு <30K · பச்சை 30K+',
+    '2021-ல் வென்ற கட்சி நிறத்தில் புள்ளிகள்',
+    'புள்ளி அளவு = வாக்காளர் அடர்த்தி',
+    'தி.வெ.க. அறிவித்த 2 தொகுதிகள் — பிற 232 நிலுவையில்'
+  ] : [
+    'Battlegrounds: 2021 margin — red <15K · orange <30K · green 30K+',
+    'Dots colored by 2021 winning party',
+    'Dot size reflects voter density',
+    '2 TVK seats announced (Vijay) · other 232 pending'
+  ];
+  el.textContent = descs[ov] || '';
 }
 
 function updateLeg() {

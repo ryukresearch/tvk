@@ -20,7 +20,7 @@ function buildPulse() {
     { id:'msme-fund', cat:'msme', num:'03',
       title: lang==='ta' ? '₹15,000 கோடி MSME நிதி' : '₹15,000 Cr MSME credit fund',
       desc:  lang==='ta' ? 'மாநில கடன் உத்தரவாதம். TN FY26 பற்றாக்குறை ₹52K கோடி — நிதி வெளியீடு கடினம்.' : 'State credit guarantee. TN FY26 deficit is ₹52K Cr — funding is tight.',
-      metric:'₹15K Cr' }
+      metric:'₹15,000 Cr' }
   ];
 
   const vj = ALL.filter(c => c.isV);
@@ -68,7 +68,7 @@ function buildPulse() {
     <div class="big-num-grid">
       <div class="big-num"><div class="n count-up" data-to="234">0</div><div class="l">${t('bn_seats')}</div><div class="s">${t('bn_seats_s')}</div></div>
       <div class="big-num"><div class="n count-up" data-to="50">0</div><div class="l">${t('bn_promises')}</div><div class="s">${t('bn_promises_s')}</div></div>
-      <div class="big-num"><div class="n">₹15K<span style="font-size:.6em"> Cr</span></div><div class="l">${t('bn_cr')}</div><div class="s">${t('bn_cr_s')}</div></div>
+      <div class="big-num"><div class="n">₹15,000<span style="font-size:.6em"> Cr</span></div><div class="l">${t('bn_cr')}</div><div class="s">${t('bn_cr_s')}</div></div>
       <div class="big-num"><div class="n">₹2,500</div><div class="l">${t('bn_women')}</div><div class="s">${t('bn_women_s')}</div></div>
     </div>
   </div>
