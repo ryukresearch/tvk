@@ -14,11 +14,11 @@ function buildCandidates(){
       ${[[234,t('f_all'),'var(--red)'],[wC,t('f_women'),'var(--pink)'],[scC,t('f_scst'),'var(--purple)'],[kC,t('f_key'),'var(--orange)'],[2,t('f_vijay'),'#ff1744']].map(([v,l,c])=>`<div class="cs" style="border-left-color:${c}"><b>${v}</b><small>${l}</small></div>`).join('')}
     </div>
 
-    <div class="m-search" style="margin-bottom:var(--sp3)"><input type="search" placeholder="${lang==='ta'?'வேட்பாளர், தொகுதி தேடு...':'Search candidate, constituency...'}" oninput="filterCands(this.value)"></div>
+    <div class="m-search cand-search"><input type="search" placeholder="${lang==='ta'?'வேட்பாளர், தொகுதி தேடு...':'Search candidate, constituency...'}" oninput="filterCands(this.value)"></div>
 
-    <div class="chip-row" id="candFilters"></div>
+    <div class="chip-row cand-filters-row" id="candFilters"></div>
 
-    <div class="sort-row">
+    <div class="sort-row cand-sort">
       <span>${t('sort_by')}:</span>
       <select id="candSortSel" onchange="setCandSort(this.value)">
         <option value="seat">${t('sort_seat')}</option>
@@ -97,5 +97,9 @@ function renderCands(){
 
 function candCard(c){
   const col=c.isV?'#ff1744':c.isK?'#f59e0b':'#6366f1';
-  return`<div class="cc" onclick="jumpToSeat(${c.n})"><div class="cc-i" style="--col:${col};background:${col}1a;color:${col}">#${c.n}</div><div class="cc-inf"><b>${c.cd}</b><small>${c.nm} · ${distName(c.di)}</small><div class="cc-bds">${c.isV?`<span class="cc-bd" style="background:#ff1744" title="${lang==='ta'?'கட்சித் தலைவர்':"Party president's seat"}">VIJAY</span>`:''}${c.isW?'<span class="cc-bd" style="background:#ec4899">WOMAN</span>':''}${c.isSC?'<span class="cc-bd" style="background:#a855f7">SC</span>':''}${c.isST?'<span class="cc-bd" style="background:#a855f7">ST</span>':''}${c.isK&&!c.isV?`<span class="cc-bd" style="background:#f59e0b" title="${lang==='ta'?'முக்கிய தலைவர்':'Key leader'}">KEY</span>`:''}${c.m21<15000?`<span class="cc-bd" style="background:#ef4444" title="${lang==='ta'?'2021: தி.மு.க. <15K வித்தியாசம்':'2021: DMK margin <15K'}">BATTLE</span>`:''}</div></div></div>`;
+  const d=typeof CAND!=='undefined'?CAND[c.n]:null;
+  const av=d?.img?`<img class="cc-av" src="${d.img}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='#${c.n}';this.parentNode.className='cc-i';this.parentNode.style='--col:${col};background:${col}1a;color:${col}'">`:`#${c.n}`;
+  const avCls=d?.img?'cc-av-wrap':'cc-i';
+  const role=d?.role?`<span class="cc-role">${d.role.length>38?d.role.slice(0,36)+'…':d.role}</span>`:'';
+  return`<div class="cc" onclick="jumpToSeat(${c.n})"><div class="${avCls}" style="--col:${col};${!d?.img?`background:${col}1a;color:${col}`:''}">${av}</div><div class="cc-inf"><b>${c.cd}</b><small>${c.nm} · ${distName(c.di)}</small>${role}<div class="cc-bds">${c.isV?`<span class="cc-bd" style="background:#ff1744" title="${lang==='ta'?'கட்சித் தலைவர்':"Party president's seat"}">VIJAY</span>`:''}${c.isW?'<span class="cc-bd" style="background:#ec4899">WOMAN</span>':''}${c.isSC?'<span class="cc-bd" style="background:#a855f7">SC</span>':''}${c.isST?'<span class="cc-bd" style="background:#a855f7">ST</span>':''}${c.isK&&!c.isV?`<span class="cc-bd" style="background:#f59e0b" title="${lang==='ta'?'முக்கிய தலைவர்':'Key leader'}">KEY</span>`:''}${c.m21<15000?`<span class="cc-bd" style="background:#ef4444" title="${lang==='ta'?'2021: தி.மு.க. <15K வித்தியாசம்':'2021: DMK margin <15K'}">BATTLE</span>`:''}</div></div></div>`;
 }

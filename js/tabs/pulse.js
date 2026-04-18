@@ -52,6 +52,20 @@ function buildPulse() {
       </button>
     </div>
 
+  </div>
+
+  <div class="tab-sec fade-in v-sec">
+    <div class="p-hook">${t('hook_pulse')}</div>
+    <div class="p-headline">${t('headline_1')}<br><em>${t('headline_2')}</em></div>
+    <div class="big-num-grid">
+      <div class="big-num"><div class="n count-up" data-to="234">0</div><div class="l">${lang==='ta'?'தொகுதிகள்':'Seats contested'}</div><div class="s">${lang==='ta'?'தனியாக · கூட்டணி இல்லை':'Solo · no alliance'}</div></div>
+      <div class="big-num"><div class="n count-up" data-to="10">0</div><div class="l">${lang==='ta'?'தூண்கள்':'Manifesto Thoons'}</div><div class="s">${lang==='ta'?'3 பகுதிகள்':'3 pillars'}</div></div>
+      <div class="big-num"><div class="n">₹50K<span style="font-size:.6em"> Cr</span></div><div class="l">TNSIA</div><div class="s">${lang==='ta'?'மூலோபாய முதலீடு':'Strategic Investment'}</div></div>
+      <div class="big-num"><div class="n">₹2,500</div><div class="l">${lang==='ta'?'மகளிர் உதவி':'Women stipend'}</div><div class="s">${lang==='ta'?'மாதம் · 60 வயது':'Per month · 60 yr'}</div></div>
+    </div>
+  </div>
+
+  <div class="tab-sec fade-in v-sec">
     <div class="benefit-hero" onclick="openMyManifestoQuiz()">
       <div class="benefit-hero-l">
         <div class="benefit-hero-eyebrow">${lang==='ta'?'தனிப்பயன் கணிப்பு':'PERSONAL ESTIMATE'}</div>
@@ -61,20 +75,91 @@ function buildPulse() {
       </div>
       <div class="benefit-hero-r" aria-hidden="true"></div>
     </div>
+  </div>
 
+  <div class="tab-sec fade-in v-sec">
+    <div class="sec-label">${lang==='ta'?'கோட்பாடு':'CORE PHILOSOPHY'}</div>
     <div class="philo-thesis">"${lang==='ta'?(PHILO.thesis.ta):PHILO.thesis.en}"</div>
-    <div class="philo-grid">
-      <div class="philo-card" style="--pc:#8b5cf6"><div class="philo-ttl">Aram · ${lang==='ta'?'அறம்':'Virtue'}</div><div class="philo-q">${lang==='ta'?PHILO.pillars.aram.ta:PHILO.pillars.aram.en}</div><div class="philo-sub">Thoon 1–2</div></div>
-      <div class="philo-card" style="--pc:#e94560"><div class="philo-ttl">Porul · ${lang==='ta'?'பொருள்':'Wealth'}</div><div class="philo-q">${lang==='ta'?PHILO.pillars.porul.ta:PHILO.pillars.porul.en}</div><div class="philo-sub">Thoon 3–7</div></div>
-      <div class="philo-card" style="--pc:#10b981"><div class="philo-ttl">Inbam · ${lang==='ta'?'இன்பம்':'Joy'}</div><div class="philo-q">${lang==='ta'?PHILO.pillars.inbam.ta:PHILO.pillars.inbam.en}</div><div class="philo-sub">Thoon 8–10</div></div>
+    <div class="philo-lede">${lang==='ta'
+      ?'திருக்குறள் அரசாங்கத்திற்கு மூன்று நிபந்தனைகளை வைக்கிறது — அறம், பொருள், இன்பம். தி.வெ.க. அறிக்கை இந்த மூன்றையும் ஒன்றாக நடைமுறைப்படுத்துகிறது.'
+      :"Thiruvalluvar's Thirukkural sets three tests every government must pass — virtue (Aram), wealth (Porul), and joy (Inbam). The TVK manifesto runs all three as one integrated framework, not sequentially."}</div>
+    <div class="bento philo-bento">
+      <div class="bento-c" style="--pc:#8b5cf6">
+        <div class="bento-emoji">⚖</div>
+        <div class="bento-tag">ARAM</div>
+        <div class="bento-body">
+          <em>அறம் · ${lang==='ta'?'அறம்':'Virtue'}</em>
+          <span>${lang==='ta'?PHILO.pillars.aram.ta:PHILO.pillars.aram.en}</span>
+        </div>
+      </div>
+      <div class="bento-c" style="--pc:#e94560">
+        <div class="bento-emoji">💎</div>
+        <div class="bento-tag">PORUL</div>
+        <div class="bento-body">
+          <em>பொருள் · ${lang==='ta'?'பொருள்':'Wealth'}</em>
+          <span>${lang==='ta'?PHILO.pillars.porul.ta:PHILO.pillars.porul.en}</span>
+        </div>
+      </div>
+      <div class="bento-c" style="--pc:#10b981">
+        <div class="bento-emoji">☀</div>
+        <div class="bento-tag">INBAM</div>
+        <div class="bento-body">
+          <em>இன்பம் · ${lang==='ta'?'இன்பம்':'Joy'}</em>
+          <span>${lang==='ta'?PHILO.pillars.inbam.ta:PHILO.pillars.inbam.en}</span>
+        </div>
+      </div>
     </div>
-    <div class="p-hook">${t('hook_pulse')}</div>
-    <div class="p-headline">${t('headline_1')}<br><em>${t('headline_2')}</em></div>
-    <div class="big-num-grid">
-      <div class="big-num"><div class="n count-up" data-to="234">0</div><div class="l">${lang==='ta'?'தொகுதிகள்':'Seats contested'}</div><div class="s">${lang==='ta'?'தனியாக · கூட்டணி இல்லை':'Solo · no alliance'}</div></div>
-      <div class="big-num"><div class="n count-up" data-to="10">0</div><div class="l">${lang==='ta'?'தூண்கள்':'Manifesto Thoons'}</div><div class="s">${lang==='ta'?'3 பகுதிகள் · அறம்/பொருள்/இன்பம்':'3 pillars · Aram / Porul / Inbam'}</div></div>
-      <div class="big-num"><div class="n">₹50K<span style="font-size:.6em"> Cr</span></div><div class="l">TNSIA</div><div class="s">${lang==='ta'?'மூலோபாய முதலீட்டு அமைப்பு':'Strategic Investment Authority'}</div></div>
-      <div class="big-num"><div class="n">₹2,500</div><div class="l">${lang==='ta'?'மகளிர் உதவி':'Women stipend'}</div><div class="s">${lang==='ta'?'மாதம் · 60 வயது வரை':'Per month · up to 60'}</div></div>
+  </div>
+
+  <div class="tab-sec fade-in">
+    <div class="econ-card">
+      <div class="econ-eyebrow">${lang==='ta'?'2036 பொருளாதார இலக்கு':'ECONOMY VISION · 2036'}</div>
+      <div class="econ-num">$1.5<span>${lang==='ta'?'டிரில்லியன்':'Trillion'}</span></div>
+      <div class="econ-lbl">${lang==='ta'?'2036-க்குள் தமிழ்நாட்டின் பொருளாதாரம்':"Tamil Nadu's economy by 2036"}</div>
+      <div class="econ-sub">${lang==='ta'?'இந்தியாவின் $10T இலக்கில் TN பங்கு · AI ஒன்றே $1.7T சேர்க்கும் (2035)':'TN share of India\'s $10T target · AI alone adds $1.7T to India by 2035'}</div>
+    </div>
+  </div>
+
+  <div class="tab-sec fade-in">
+    <div class="sec-label">${lang==='ta'?'5 ஆண்டு பார்வை':'5-YEAR MISSION · 2026-2031'}</div>
+    <div class="sec-title">${lang==='ta'?'ஒவ்வொரு ஆண்டும் என்ன நடக்கும்':'What happens every year · consolidated'}</div>
+    <div class="vision-tl">
+      <div class="vtl-line"></div>
+      <div class="vtl-yr" style="--yc:#ef4444">
+        <div class="vtl-dot">Y1</div>
+        <div class="vtl-body">
+          <div class="vtl-hd">${lang==='ta'?'தொடக்கம் · 2026–27':'LAUNCH · 2026–27'}</div>
+          <ul>${(lang==='ta'?['நாள் 1 — இலவச பேருந்து பயணம் (நிர்வாக உத்தரவு)','30 நாட்கள் — காவல் ₹18.2K → ₹25K · போதை தடை மண்டலம்','90 நாட்கள் — பெண் ₹2,500/மா · மதிப்புமிகு','6 மாதம் — விவசாய கடன் தள்ளுபடி · <5 ஏக்கர் · 100%','ஆண்டு 1 — TNSIA ₹50,000 கோடி செயல்பாடு',"இந்தியாவின் முதல் AI அமைச்சகம்",'மக்கள் மன்றம் ஆப் நேரலை']:['Day 1 — Free bus travel (executive order)','30 days — Police ₹18.2K → ₹25K · anti-drug zones','90 days — Women ₹2,500/mo · Madhippumigu','6 months — Farm loan waiver · <5 acres · 100%','Year 1 — TNSIA ₹50,000 Cr operational',"India's first AI Ministry formed","People's Forum app live"]).map(x=>`<li>${x}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="vtl-yr" style="--yc:#f59e0b">
+        <div class="vtl-dot">Y2</div>
+        <div class="vtl-body">
+          <div class="vtl-hd">${lang==='ta'?'விரிவாக்கம் · 2027–28':'SCALE · 2027–28'}</div>
+          <ul>${(lang==='ta'?['5 லட்சம் பயிற்சி/ஆண்டு · ₹10K/மா','5 பொறியியல் + 3 மருத்துவ கல்லூரிகள்','முதல் 500-படுக்கை மல்டி-ஸ்பெஷாலிட்டி மருத்துவமனை','உழவன் AI பரவல்','சூப்பர் ஆப் · முதல் 250 சேவைகள்']:['5L internships/yr at ₹10K/mo operational','5 new engineering + 3 medical colleges','First 500-bed multi-specialty hospital opens','Ulavan Farmer AI rollout','Super App · first 250 services live']).map(x=>`<li>${x}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="vtl-yr" style="--yc:#ec4899">
+        <div class="vtl-dot">Y3</div>
+        <div class="vtl-body">
+          <div class="vtl-hd">${lang==='ta'?'நிறுவனங்கள் · 2028–29':'INSTITUTIONS · 2028–29'}</div>
+          <ul>${(lang==='ta'?['PIET பல்கலைக்கழகம் துவக்கம்','தமிழ் AI மாதிரி · இலவசம்','டிரோன் வழித்தடம் · 10 மாவட்டம்','ஆட்சி டாஷ்போர்டு பொதுத் திறப்பு','குறைகடத்தி சோதனை ஆய்வகம் செயல்பாடு']:['PIET University inaugurated','Tamil AI Model released · free for citizens','Drone Route live · 10 districts','Governance Dashboard public','Semiconductor hardware testing lab operational']).map(x=>`<li>${x}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="vtl-yr" style="--yc:#10b981">
+        <div class="vtl-dot">Y4</div>
+        <div class="vtl-body">
+          <div class="vtl-hd">${lang==='ta'?'மாற்றம் · 2029–30':'TRANSFORMATION · 2029–30'}</div>
+          <ul>${(lang==='ta'?['டெலி-மருத்துவம் · 3,000 மையங்கள்','குளசேகரபட்டினம் விண்வெளி மண்டலம்','i-தமிழ் FinTech தடங்கம் · கோயம்புத்தூர்','30 லட்சம் ஏக்கர் நீர்ப்பாசனம் சேர்ப்பு']:['Tele-medicine · 3,000 centres complete','Kulasekarapattinam space region opens','i-Tamil FinTech Corridor live · Coimbatore','30L acres added to irrigation']).map(x=>`<li>${x}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="vtl-yr" style="--yc:#6366f1">
+        <div class="vtl-dot">Y5</div>
+        <div class="vtl-body">
+          <div class="vtl-hd">${lang==='ta'?'மரபு · 2030–31':'LEGACY · 2030–31'}</div>
+          <ul>${(lang==='ta'?['பசுமை TN · 33% காடு (2031 இலக்கு)','$1T GSDP · 2036-க்கு $1.5T பாதையில்','சூப்பர் ஆப் · 500 சேவைகள் முழுமை','ஊழல் அம்பலம் சட்டம் அமல்','அறிக்கை மதிப்பெண் வெளியீடு']:['Green TN · 33% forest coverage (2031 target)','$1T GSDP milestone · on path to $1.5T by 2036','Super App · 500 services complete','Whistleblower Protection Act enforcement','Manifesto scorecard published']).map(x=>`<li>${x}</li>`).join('')}</ul>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -85,7 +170,6 @@ function buildPulse() {
         <div class="fiscal-num">${PHILO.fiscal.debt.v}</div>
         <div class="fiscal-lbl">${lang==='ta'?PHILO.fiscal.debt.ta:PHILO.fiscal.debt.en}</div>
       </div>
-      <div class="fiscal-line">${lang==='ta'?PHILO.fiscal.debtLine.ta:PHILO.fiscal.debtLine.en}</div>
       <div class="fiscal-row fiscal-ans">
         <div class="fiscal-num" style="color:#fbbf24">${PHILO.fiscal.answer.v}</div>
         <div class="fiscal-lbl">${lang==='ta'?PHILO.fiscal.answer.ta:PHILO.fiscal.answer.en}</div>
@@ -98,7 +182,10 @@ function buildPulse() {
     <div class="sec-title">${t('vjy_title')}</div>
     <div class="vjy-wrap">
       ${vj.map(c => `<div class="vjy" onclick="jumpToSeat(${c.n})">
-        <span class="vjy-b">VIJAY</span>
+        <div class="vjy-top">
+          ${(typeof CAND!=='undefined' && CAND[c.n]?.img)?`<img class="vjy-av" src="${CAND[c.n].img}" alt="" onerror="this.remove()">`:''}
+          <span class="vjy-b">VIJAY</span>
+        </div>
         <div class="vjy-n">#${c.n} · ${distName(c.di)}</div>
         <div class="vjy-name">${c.nm}</div>
         <div class="vjy-d">${c.cd}</div>
@@ -121,36 +208,14 @@ function buildPulse() {
   </div>
 
   <div class="tab-sec fade-in">
-    <div class="sec-label">${t('first_label')}</div>
-    <div class="sec-title">${t('first_title')}</div>
-    <div class="mini-tl mini-tl-5">
-      <div class="mtl"><b>${lang==='ta'?'நாள் 1':'DAY 1'}</b><p>${lang==='ta'?'இலவச பேருந்து':'Free bus travel'}</p><small>${lang==='ta'?'நிர்வாக உத்தரவு':'Executive order'}</small></div>
-      <div class="mtl"><b>${lang==='ta'?'30 நாட்கள்':'30 DAYS'}</b><p>${lang==='ta'?'காவல் சம்பளம் உயர்வு · போதைப் பொருள் தடை':'Police pay + anti-drug zones'}</p><small>₹18.2K → ₹25K</small></div>
-      <div class="mtl"><b>${lang==='ta'?'90 நாட்கள்':'90 DAYS'}</b><p>${lang==='ta'?'₹2,500 மகளிர் உதவி':'Women ₹2,500/mo rollout'}</p><small>Madhippumigu Magalir</small></div>
-      <div class="mtl"><b>${lang==='ta'?'6 மாதம்':'6 MONTHS'}</b><p>${lang==='ta'?'விவசாய கடன் தள்ளுபடி':'Farm loan waiver processing'}</p><small><5 acres · 100%</small></div>
-      <div class="mtl"><b>${lang==='ta'?'1 ஆண்டு':'1 YEAR'}</b><p>${lang==='ta'?'TNSIA செயல்பாடு · கலைப் பள்ளிகள்':'TNSIA operational · Creative schools'}</p><small>₹50,000 Cr</small></div>
-    </div>
-  </div>
-
-  <div class="tab-sec fade-in">
-    <div class="sec-label">${lang==='ta'?'பண்பாடு & சுற்றுலா':'CULTURE & TOURISM'}</div>
-    <div class="sec-title">${lang==='ta'?'Thoon 01 — தமிழ் அடையாளம்':'Thoon 01 — Tamil Identity'}</div>
-    <div class="tour-strip">
-      <div class="tour-c"><b>4</b><span>${lang==='ta'?'ஆன்மீக சுற்றுலா பாதைகள்':'Spiritual routes'}</span></div>
-      <div class="tour-c"><b>⛰</b><span>${lang==='ta'?'நீலகிரி சாகச சுற்றுலா':'Nilgiris adventure'}</span></div>
-      <div class="tour-c"><b>🚤</b><span>${lang==='ta'?'வேதாரண்யம் → ராமேஸ்வரம்':'Vedaranyam → Rameswaram'}</span></div>
-      <div class="tour-c"><b>🚐</b><span>${lang==='ta'?'கேரவன் சுற்றுலா':'Caravan tourism policy'}</span></div>
-      <div class="tour-c"><b>AR/VR</b><span>${lang==='ta'?'கீழடி · ஆதிசனல்லூர்':'Keeladi · Adichanallur'}</span></div>
-      <div class="tour-c"><b>🤖</b><span>${lang==='ta'?'தமிழ் AI மாதிரி':'Tamil AI model'}</span></div>
-      <div class="tour-c"><b>1,000</b><span>${lang==='ta'?'சிலம்பம் மையங்கள்':'Silambam centres'}</span></div>
-    </div>
-  </div>
-
-  <div class="tab-sec fade-in">
     <div class="sec-label">${lang==='ta'?'கருத்தியல் மூதாதையர்':'IDEOLOGICAL LEGACY'}</div>
     <div class="sec-title">${lang==='ta'?'5 தலைவர்கள் · ஒரு கொள்கை':'Five names, one philosophy'}</div>
     <div class="leader-strip">
-      ${PHILO.leaders.map(L=>`<div class="leader"><div class="leader-av">${L.n[0]}</div><div class="leader-n">${lang==='ta'?L.ta:L.n}</div><div class="leader-r">${L.role}</div></div>`).join('')}
+      ${PHILO.leaders.map(L=>`<div class="leader">
+        <div class="leader-av">${L.img?`<img src="${L.img}" alt="${L.n}" loading="lazy" onerror="this.parentNode.innerHTML='${L.n[0]}'">`:L.n[0]}</div>
+        <div class="leader-n">${lang==='ta'?L.ta:L.n}</div>
+        <div class="leader-r">${L.role}</div>
+      </div>`).join('')}
     </div>
   </div>
 

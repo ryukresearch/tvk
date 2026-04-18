@@ -72,22 +72,33 @@ const PERSONA_ICON = {
 };
 
 // Build a compact, meaningful constellation label from a manifesto item.
-const STAR_FILLER = new Set(['scheme','act','welfare','rights','protection','the','and','for','of','a','to','in','on','as','by','at']);
+const STAR_FILLER = new Set(['scheme','act','welfare','rights','protection','the','and','for','of','a','to','in','on','as','by','at','hike','amount','sheme','model','scheme;']);
 function starLabel(p) {
   let t = (p.title || '').replace(/^[A-Z]\.\s*/, '').replace(/[:;]+$/, '').trim();
-  // Drop bracketed hints like "(SC)"
   t = t.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+  // Metric formatting
   const rawM = (p.metric || '').trim();
-  const m = (typeof fmtMetric === 'function' ? fmtMetric(rawM) : rawM);
-  const mShort = m && m.length <= 14 ? m : '';
-  // Split, keep meaningful words — prefer those the user would recognize
-  const words = t.split(/\s+/);
-  let kept = words.filter(w => !STAR_FILLER.has(w.toLowerCase().replace(/[.,]/g,'')));
-  if (kept.length < 2) kept = words;
-  let head = kept.slice(0, 3).join(' ');
-  if (head.length > 22) head = head.slice(0, 20).replace(/\s+\S*$/, '') + '…';
+  let m = (typeof fmtMetric === 'function' ? fmtMetric(rawM) : rawM);
+  // Strip trailing non-essential words from formatted metric (e.g. "₹20K Cr" is fine; "₹25L insurance" keep; but drop trailing unit if title repeats it)
+  m = m.replace(/\s+/g, ' ').trim();
+  const mShort = m && m.length <= 12 ? m : '';
+  // Meaningful keyword extraction: prefer Proper Nouns + first noun
+  const words = t.split(/\s+/).filter(w => w);
+  const content = words.filter(w => {
+    const lc = w.toLowerCase().replace(/[.,;:]/g,'');
+    return !STAR_FILLER.has(lc) && lc.length > 1;
+  });
+  const pick = content.length >= 2 ? content.slice(0, 3) : words.slice(0, 3);
+  let head = pick.join(' ');
+  // Budget: total must fit ~24 chars (with metric prefix, ~12 chars for head)
+  const budget = mShort ? 14 : 22;
+  if (head.length > budget) {
+    // Cut at word boundary, max 2 words if needed
+    head = pick.slice(0, 2).join(' ');
+    if (head.length > budget) head = head.slice(0, budget - 1).replace(/\s+\S*$/, '') + '…';
+  }
   const out = mShort ? `${mShort} · ${head}` : head;
-  return out.length > 28 ? out.slice(0, 26) + '…' : out;
+  return out;
 }
 
 // Derive per-person estimate + impact + short label from a manifesto item.
@@ -147,6 +158,8 @@ function renderConstellation(containerId, personaKey) {
   if (pk !== 'all') matches = matches.filter(p => p.personas && (p.personas.includes(pk) || (p.personas.length===1 && p.personas[0]==='all')));
   const pf = (typeof pillarFilter !== 'undefined') ? pillarFilter : 'all';
   if (isManifesto && pf !== 'all') matches = matches.filter(p => p.pillar === pf);
+  const tf = (typeof thoonFilter !== 'undefined') ? thoonFilter : 'all';
+  if (isManifesto && tf !== 'all') matches = matches.filter(p => p.thoon === tf);
   // Attach derived vals; sort by impact desc
   matches.forEach(p => { if (isManifesto) p._v = p._v || deriveStar(p); });
   matches.sort((a, b) => {
@@ -207,7 +220,7 @@ function renderConstellation(containerId, personaKey) {
       </div>
     </div>
     <div class="const-stage">
-      <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" class="const-svg" id="constSvg">
+      <svg viewBox="-80 -10 560 420" preserveAspectRatio="xMidYMid meet" class="const-svg" id="constSvg">
         <defs>
           <radialGradient id="constBg" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="rgba(233,69,96,0.12)"/>
@@ -233,11 +246,14 @@ function renderConstellation(containerId, personaKey) {
         ${stars.map((s, i) => s.labelTxt ? `
           <text class="const-label ${s.filled?'filled':'outline'}" data-i="${i}" data-id="${s.p.id}" x="${s.lx.toFixed(1)}" y="${s.ly.toFixed(1)}" text-anchor="${s.anchor}">${s.labelTxt}</text>
         ` : '').join('')}
+        <defs>
+          <clipPath id="constCenterClip"><circle cx="${cx}" cy="${cy}" r="28"/></clipPath>
+        </defs>
         <g transform="translate(${cx},${cy})">
-          <circle r="30" fill="rgba(8,8,15,0.9)" stroke="#e94560" stroke-width="1.5"/>
-          <circle r="34" fill="none" stroke="#fbbf24" stroke-width="0.5" opacity="0.5"/>
-          <text x="0" y="10" text-anchor="middle" font-size="28">${icon}</text>
+          <circle r="34" fill="none" stroke="#fbbf24" stroke-width="0.8" opacity="0.55"/>
+          <circle r="30" fill="#0a0a12" stroke="#e94560" stroke-width="1.8"/>
         </g>
+        <image href="assets/tvk-logo.jpg" x="${cx-28}" y="${cy-28}" width="56" height="56" clip-path="url(#constCenterClip)" preserveAspectRatio="xMidYMid slice"/>
       </svg>
     </div>
     <div class="const-foot">

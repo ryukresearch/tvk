@@ -5,6 +5,11 @@
 function buildMap() {
   const el = document.getElementById('tab2');
   el.innerHTML = `
+  <div class="map-intro">
+    <div class="sec-label">${t('map_label')}</div>
+    <div class="sec-title">${t('map_title')}</div>
+    <div class="sec-desc">${t('map_sub')}</div>
+  </div>
   <div class="home-wrap">
     <div class="map-area">
       <div class="map-bar">
@@ -280,7 +285,14 @@ function showDet() {
       <div class="s-dist">${distName(c.di)}</div>
       <div class="cand-box">
         <div class="cb-label"><span class="party-flag" style="background:${PARTY.TVK.c}">TVK</span> ${t('tvk_candidate')}</div>
-        <div class="cb-name">${c.cd}</div>
+        <div class="cb-row">
+          ${(typeof CAND!=='undefined' && CAND[c.n]?.img)?`<img class="cb-avatar" src="${CAND[c.n].img}" alt="" loading="lazy" onerror="this.remove()">`:''}
+          <div class="cb-info">
+            <div class="cb-name">${c.cd}</div>
+            ${(typeof CAND!=='undefined' && CAND[c.n]?.role)?`<div class="cb-role">${CAND[c.n].role}</div>`:''}
+            ${(typeof CAND!=='undefined' && CAND[c.n]?.edu)?`<div class="cb-edu">${CAND[c.n].edu}</div>`:''}
+          </div>
+        </div>
         <div class="badges" style="margin-top:6px;margin-bottom:0">
           ${c.isW?'<span class="badge" style="background:#ec4899">WOMAN</span>':''}
           ${c.isSC?'<span class="badge" style="background:#a855f7">SC</span>':''}
