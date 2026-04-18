@@ -1,28 +1,8 @@
-/* ═══════════════════════════════════════════════════════════════
-   PULSE TAB — Landing dashboard
-   Hero title + toggles + 4 big numbers + 3 hero promises + Vijay spotlight
-   + battleground CTA + mini timeline
-   ═══════════════════════════════════════════════════════════════ */
+/* VETRI TAB — landing. Hero CTA, philosophy bento, economy vision, 5-yr mission,
+   fiscal, Vijay spotlight, battleground CTA, leaders. */
 
 function buildPulse() {
   const el = document.getElementById('tab0');
-
-  // Top 3 promises — categories used for small colored dots only (no full gradients)
-  const big3 = [
-    { id:'w-stipend', cat:'women', num:'01',
-      title: lang==='ta' ? 'ஒவ்வொரு பெண் தலைவிக்கும் ₹2,500/மாதம்' : '₹2,500/mo to every woman head of family',
-      desc:  lang==='ta' ? '60 வயது வரை. ~2.6 கோடி பெண்களுக்குப் பயனளிக்கும். ஆண்டு செலவு ~₹78K கோடி.' : 'Up to age 60. Benefits ~2.6Cr women. Est. annual cost ~₹78K Cr.',
-      metric:'₹2,500' },
-    { id:'y-jobs', cat:'youth', num:'02',
-      title: lang==='ta' ? '75% உள்ளூர் வேலை சட்டம்' : '75% local jobs law',
-      desc:  lang==='ta' ? 'தமிழ்நாட்டில் 75% வேலைகள் உள்ளூர்வாசிகளுக்கு. AP சட்டம் 2023-ல் ரத்தானது — நீதிமன்ற சவால் வரும்.' : '75% of TN jobs for locals. AP struck down in 2023 — court challenge likely.',
-      metric:'75%' },
-    { id:'msme-fund', cat:'msme', num:'03',
-      title: lang==='ta' ? '₹15,000 கோடி MSME நிதி' : '₹15,000 Cr MSME credit fund',
-      desc:  lang==='ta' ? 'மாநில கடன் உத்தரவாதம். TN FY26 பற்றாக்குறை ₹52K கோடி — நிதி வெளியீடு கடினம்.' : 'State credit guarantee. TN FY26 deficit is ₹52K Cr — funding is tight.',
-      metric:'₹15,000 Cr' }
-  ];
-
   const vj = ALL.filter(c => c.isV);
 
   let h = `
@@ -253,14 +233,4 @@ function buildPulse() {
   }, 200);
 }
 
-// Cross-tab: jump from Pulse to Map with seat selected
 function jumpToSeat(n) { sel = n; switchTab(2); }
-
-// Cross-tab: jump from Pulse hero promise to Promises tab & open modal
-function openPromiseById(id) {
-  switchTab(1);
-  setTimeout(() => {
-    const p = PROMISES.find(x => x.id === id);
-    if (p) showPromiseModal(p.id);
-  }, 150);
-}

@@ -289,27 +289,6 @@ function showPromiseModal(id){
       </div>`;
     openModal(h); return;
   }
-  // Legacy PROMISES path (for constellation on old IDs)
-  const p = typeof id==='string' ? PROMISES.find(x=>x.id===id) : id;
-  if(!p) return;
-  const loc=p[lang]||p.en, c=CATS[p.c];
-  const ctxRows=[
-    {k:'compare',ic:'⚖',col:'#3b82f6',txt:loc.compare},
-    {k:'legal',ic:'§',col:'#a855f7',txt:loc.legal},
-    {k:'fiscal',ic:'₹',col:'#10b981',txt:loc.fiscal},
-    {k:'risk',ic:'⚠',col:'#ef4444',txt:loc.risk}
-  ].filter(r=>r.txt);
-  openModal(`
-    <div class="modal-hd"><button class="modal-x" onclick="closeModal()">✕</button>
-      <span class="modal-tag" style="background:${c.c}22;color:${c.c}">${catLabel(p.c)}</span>
-      <div class="modal-title">${loc.t}</div></div>
-    <div class="modal-body">
-      <div class="modal-sec"><p>${loc.d}</p></div>
-      ${p.metric?`<div class="modal-sec"><h4>${t('context_benefits')}</h4><p><b style="color:${c.c};font-family:var(--mono);font-size:18px">${p.metric}</b>${loc.benefits?` · ${loc.benefits}`:''}</p></div>`:loc.benefits?`<div class="modal-sec"><h4>${t('context_benefits')}</h4><p>${loc.benefits}</p></div>`:''}
-      ${ctxRows.map(r=>`<div class="ctx-row" style="--ctx-c:${r.col}"><div class="ctx-ic">${r.ic}</div><div class="ctx-txt"><b>${t('context_'+r.k)}</b><p>${r.txt}</p></div></div>`).join('')}
-    </div>
-    <div class="modal-ft"><button class="btn" onclick="closeModal();switchTab(2)">${t('show_on_map')}</button>
-      <button class="btn btn-ghost" onclick="closeModal()">${t('close')}</button></div>`);
 }
 
 function renderH2H(){

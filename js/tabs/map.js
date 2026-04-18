@@ -273,6 +273,18 @@ function showDet() {
     </div>`;
   }
 
+  // Local issues block
+  let htmlIssues = '';
+  const iss = (typeof ISSUES !== 'undefined') ? ISSUES[c.n] : null;
+  if (iss && iss.i && iss.i.length) {
+    const ICN = {water:'💧',flooding:'🌊',agriculture:'🌾',pollution:'☁️',jobs:'💼',roads:'🛣',transport:'🚌',waste:'🗑',health:'🏥',land:'📋',safety:'🛡',governance:'⚖',housing:'🏠',fisheries:'🎣',education:'🎓',power:'⚡',caste:'👥'};
+    const confCol = {HIGH:'#10b981',MED:'#f59e0b',LOW:'#6b7280'}[iss.c]||'#6b7280';
+    htmlIssues = `<div class="dc dc-issues">
+      <div class="demo-t">${lang==='ta'?'உள்ளூர் பிரச்னைகள்':'LOCAL ISSUES'}<span class="issue-conf" style="color:${confCol}">· ${lang==='ta'?'நம்பகத்தன்மை':'confidence'} ${iss.c}</span></div>
+      ${iss.i.map(([t,cat,sev])=>`<div class="issue-row"><span class="issue-ic">${ICN[cat]||'•'}</span><span class="issue-sev s-${sev.toLowerCase()}">${sev}</span><span class="issue-t">${t}</span></div>`).join('')}
+    </div>`;
+  }
+
   el.innerHTML = `
     <div class="dc dc-hero">
       <div class="badges">
@@ -302,6 +314,7 @@ function showDet() {
     </div>
     ${html2021}
     ${html2026}
+    ${htmlIssues}
     <div class="dc">
       <div class="demo-t">${t('voter_demographics')}</div>
       <div class="demo-g">

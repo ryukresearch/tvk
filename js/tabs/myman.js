@@ -1,70 +1,5 @@
-/* ═══════════════════════════════════════════════════════════════
-   MY MANIFESTO — Constellation + Quiz + Stack Share
-   Depends on: PROMISES, CATS, PARTY (optional), core.js (persona, lang, t)
-   ═══════════════════════════════════════════════════════════════ */
+/* MY MANIFESTO — constellation + quiz + share. Depends on MANIFESTO, PILLARS, CATS, core state */
 
-// Per-person annual ₹ value (approx) + impact score 1-10 for each promise.
-// Used for constellation sizing and the running counter.
-const PROMISE_VAL = {
-  // Women
-  'w-stipend':   {yr: 30000, impact: 10},
-  'w-lpg':       {yr: 5400,  impact: 7},
-  'w-bus':       {yr: 3000,  impact: 6},
-  'w-force':     {yr: 0,     impact: 4},
-  'w-education': {yr: 15000, impact: 9},
-  'w-safety':    {yr: 0,     impact: 5},
-  'w-marriage':  {yr: 6000,  impact: 6},
-  'w-courts':    {yr: 0,     impact: 3},
-  'w-pads':      {yr: 2000,  impact: 5},
-  'w-shg':       {yr: 20000, impact: 7},
-  'w-baby':      {yr: 500,   impact: 5},
-  'w-dept':      {yr: 0,     impact: 2},
-  // Youth
-  'y-unemployment':{yr: 48000, impact: 9},
-  'y-edu-loan':  {yr: 80000, impact: 8},
-  'y-interns':   {yr: 120000,impact: 10},
-  'y-startup':   {yr: 200000,impact: 7},
-  'y-jobs':      {yr: 0,     impact: 5},
-  'y-creative':  {yr: 0,     impact: 4},
-  'y-service':   {yr: 180000,impact: 9},
-  'y-drug':      {yr: 0,     impact: 3},
-  'y-council':   {yr: 0,     impact: 2},
-  // Farmers
-  'f-waiver-small':{yr: 10000,impact: 9},
-  'f-waiver-large':{yr: 15000,impact: 8},
-  'f-msp-paddy': {yr: 8000,  impact: 8},
-  'f-msp-sugar': {yr: 3000,  impact: 6},
-  'f-annual':    {yr: 10000, impact: 8},
-  'f-kids-edu':  {yr: 30000, impact: 7},
-  'f-fair':      {yr: 2000,  impact: 4},
-  'f-ration':    {yr: 0,     impact: 3},
-  // MSME
-  'msme-fund':   {yr: 50000, impact: 9},
-  'msme-subsidy':{yr: 100000,impact: 8},
-  'msme-tax':    {yr: 10000, impact: 6},
-  'msme-peak':   {yr: 5000,  impact: 5},
-  // Weavers
-  'wv-aid':      {yr: 30000, impact: 10},
-  'wv-power':    {yr: 6000,  impact: 7},
-  'wv-input':    {yr: 8000,  impact: 7},
-  'wv-insurance':{yr: 1000,  impact: 5},
-  'wv-pension':  {yr: 36000, impact: 9},
-  'wv-ecom':     {yr: 0,     impact: 4},
-  'wv-showroom': {yr: 0,     impact: 3},
-  // Police
-  'p-salary':    {yr: 84000, impact: 10},
-  'p-stress':    {yr: 12000, impact: 5},
-  'p-women':     {yr: 0,     impact: 4},
-  // Govt employees
-  'ge-ops':      {yr: 30000, impact: 8},
-  'ge-regularize':{yr: 60000,impact: 9},
-  'ge-exams':    {yr: 0,     impact: 5},
-  // Governance
-  'g-white':     {yr: 0,     impact: 3},
-  'g-pillars':   {yr: 0,     impact: 4},
-  'g-impl':      {yr: 0,     impact: 3},
-  'g-secular':   {yr: 0,     impact: 3}
-};
 
 const PERSONA_ICON = {
   woman: '👩', farmer: '🌾', youth: '🎓', business: '🏭',
@@ -116,59 +51,20 @@ function deriveStar(item) {
   return { yr, impact };
 }
 
-// Short labels shown next to each constellation star (EN + TA). 1-3 words.
-const SHORT_LABEL = {
-  'w-stipend':{en:'₹2.5K women',ta:'₹2.5K பெண்'},'w-lpg':{en:'6 LPG/yr',ta:'6 LPG'},
-  'w-bus':{en:'Free bus',ta:'இலவச பேருந்து'},'w-force':{en:'Women force',ta:'பெண் படை'},
-  'w-education':{en:'₹15K edu',ta:'₹15K கல்வி'},'w-safety':{en:'5-min safety',ta:'5நிமிட பாதுகாப்பு'},
-  'w-marriage':{en:'Gold gift',ta:'தங்க பரிசு'},'w-courts':{en:'Fast courts',ta:'விரைவு நீதி'},
-  'w-pads':{en:'Free pads',ta:'இலவச நாப்கின்'},'w-shg':{en:'SHG ₹5L',ta:'SHG ₹5L'},
-  'w-baby':{en:'Baby kit',ta:'குழந்தை கிட்'},'w-dept':{en:'Safety dept',ta:'பாதுகாப்பு துறை'},
-  'y-unemployment':{en:'₹4K/mo grad',ta:'₹4K பட்டதாரி'},'y-edu-loan':{en:'Edu loan ₹20L',ta:'கல்வி கடன்'},
-  'y-interns':{en:'5L interns',ta:'5L பயிற்சி'},'y-startup':{en:'₹25L startup',ta:'₹25L ஸ்டார்ட்அப்'},
-  'y-jobs':{en:'75% local law',ta:'75% உள்ளூர்'},'y-creative':{en:'Creators 1.5L',ta:'கலை தொழில்'},
-  'y-service':{en:'Panchayat jobs',ta:'பஞ்சாயத்து'},'y-drug':{en:'Drug-free TN',ta:'போதை இல்லா'},
-  'y-council':{en:'Youth council',ta:'இளைஞர் குழு'},
-  'f-waiver-small':{en:'Loan waiver',ta:'கடன் தள்ளுபடி'},'f-waiver-large':{en:'Loan 50% off',ta:'கடன் 50%'},
-  'f-msp-paddy':{en:'Paddy ₹3,500',ta:'நெல் ₹3,500'},'f-msp-sugar':{en:'Sugar ₹4,500',ta:'கரும்பு ₹4,500'},
-  'f-annual':{en:'Farm ₹10K/yr',ta:'விவசாய ₹10K'},'f-kids-edu':{en:'Farmer kids edu',ta:'விவசாய கல்வி'},
-  'f-fair':{en:'Fair procurement',ta:'நியாய கொள்முதல்'},'f-ration':{en:'Ration density',ta:'ரேஷன் அடர்'},
-  'msme-fund':{en:'₹15,000 Cr fund',ta:'₹15K Cr நிதி'},'msme-subsidy':{en:'35% MSME',ta:'35% மானியம்'},
-  'msme-tax':{en:'Power tax off',ta:'மின் வரி'},'msme-peak':{en:'No peak tariff',ta:'உச்சம் இல்லா'},
-  'wv-aid':{en:'₹30K weaver',ta:'₹30K நெசவாளர்'},'wv-power':{en:'Free units',ta:'இலவச மின்'},
-  'wv-input':{en:'50% inputs',ta:'50% உள்ளீடு'},'wv-insurance':{en:'₹10L cover',ta:'₹10L காப்பீடு'},
-  'wv-pension':{en:'₹3K pension',ta:'₹3K ஓய்வூதியம்'},'wv-ecom':{en:'E-commerce',ta:'மின்வர்த்தகம்'},
-  'wv-showroom':{en:'Showrooms',ta:'அங்காடிகள்'},
-  'p-salary':{en:'Police ₹25K',ta:'காவல் ₹25K'},'p-stress':{en:'Stress ₹1K',ta:'அழுத்த ₹1K'},
-  'p-women':{en:'Women facilities',ta:'பெண் வசதி'},
-  'ge-ops':{en:'Old pension',ta:'பழைய ஓய்வூ'},'ge-regularize':{en:'Regularize',ta:'நிரந்தரம்'},
-  'ge-exams':{en:'TNPSC schedule',ta:'TNPSC'},
-  'g-white':{en:'White papers',ta:'வெள்ளை அறிக்'},'g-pillars':{en:'6 pillars',ta:'6 தூண்கள்'},
-  'g-impl':{en:'Execute first',ta:'செயல்பாடு'},'g-secular':{en:'Secular',ta:'மதச்சார்பற்ற'}
-};
 
 // ─── CONSTELLATION ───
 function renderConstellation(containerId, personaKey) {
   const el = document.getElementById(containerId);
   if (!el) return;
   const pk = personaKey || persona || 'all';
-  const src = (typeof MANIFESTO !== 'undefined' && MANIFESTO.length) ? MANIFESTO : PROMISES;
-  const isManifesto = src === MANIFESTO;
-  let matches = src.slice();
+  let matches = (typeof MANIFESTO !== 'undefined' ? MANIFESTO : []).slice();
   if (pk !== 'all') matches = matches.filter(p => p.personas && (p.personas.includes(pk) || (p.personas.length===1 && p.personas[0]==='all')));
   const pf = (typeof pillarFilter !== 'undefined') ? pillarFilter : 'all';
-  if (isManifesto && pf !== 'all') matches = matches.filter(p => p.pillar === pf);
+  if (pf !== 'all') matches = matches.filter(p => p.pillar === pf);
   const tf = (typeof thoonFilter !== 'undefined') ? thoonFilter : 'all';
-  if (isManifesto && tf !== 'all') matches = matches.filter(p => p.thoon === tf);
-  // Attach derived vals; sort by impact desc
-  matches.forEach(p => { if (isManifesto) p._v = p._v || deriveStar(p); });
-  matches.sort((a, b) => {
-    const av = isManifesto ? a._v : (PROMISE_VAL[a.id] || {yr:0,impact:0});
-    const bv = isManifesto ? b._v : (PROMISE_VAL[b.id] || {yr:0,impact:0});
-    // Primary: impact; secondary: ₹ yr value
-    return (bv.impact - av.impact) || (bv.yr - av.yr);
-  });
-  // Cap graph to top 15 by impact — cards view already shows everything
+  if (tf !== 'all') matches = matches.filter(p => p.thoon === tf);
+  matches.forEach(p => { p._v = p._v || deriveStar(p); });
+  matches.sort((a, b) => (b._v.impact - a._v.impact) || (b._v.yr - a._v.yr));
   matches = matches.slice(0, 15);
 
   const N = matches.length;
@@ -178,23 +74,15 @@ function renderConstellation(containerId, personaKey) {
   const filledMax = isMob ? 6 : (lang === 'ta' ? 12 : 15);
   const labelMax = filledMax;
   const stars = matches.map((p, i) => {
-    const v = isManifesto ? p._v : (PROMISE_VAL[p.id] || {yr:0, impact:5});
+    const v = p._v;
     const ring = i % 3;
     const r = baseR + ring * 28 + (Math.sin(i * 3.17) * 8);
     const angle = (i / N) * Math.PI * 2 + Math.cos(i * 1.7) * 0.08;
     const x = cx + Math.cos(angle) * r;
     const y = cy + Math.sin(angle) * r;
     const size = 3.5 + (v.impact / 10) * 7;
-    const color = isManifesto
-      ? ((typeof PILLARS !== 'undefined' && PILLARS[p.pillar] && PILLARS[p.pillar].c) || '#e94560')
-      : ((CATS[p.c] && CATS[p.c].c) || '#ec4899');
-    let labelTxt = '';
-    if (isManifesto) {
-      labelTxt = starLabel(p);
-    } else {
-      const lbl = SHORT_LABEL[p.id];
-      labelTxt = lbl ? (lang === 'ta' ? lbl.ta : lbl.en) : '';
-    }
+    const color = (typeof PILLARS !== 'undefined' && PILLARS[p.pillar] && PILLARS[p.pillar].c) || '#e94560';
+    let labelTxt = starLabel(p);
     // Push label outward from center along the star's radial direction
     const dx = x - cx, dy = y - cy, dd = Math.hypot(dx, dy) || 1;
     const lx = x + (dx / dd) * (size + 10);
