@@ -113,6 +113,8 @@ function buildTab(i) {
   else if (i === 3) buildCandidates();
 }
 function switchTab(i) {
+  const np = document.getElementById('newsPanel');
+  if (np) np.hidden = true;
   if (i === activeTab) return;
   activeTab = i;
   document.querySelectorAll('.bnav button, .side-item').forEach((b, k) => {
@@ -178,6 +180,50 @@ window.addEventListener('keydown', e => {
   }
 });
 
+// ─── NEWS PANEL ───
+function getDismissedNews() { try { return JSON.parse(localStorage.getItem('tvk-news-dismissed')||'[]'); } catch(e){ return []; } }
+function activeNews() {
+  if (typeof NEWS === 'undefined') return [];
+  const d = getDismissedNews();
+  return NEWS.filter(n => !d.includes(n.id));
+}
+function renderNewsPanel() {
+  const panel = document.getElementById('newsPanel');
+  const dot = document.getElementById('bellDot');
+  if (!panel) return;
+  const items = activeNews();
+  if (dot) dot.hidden = items.length === 0;
+  if (!items.length) { panel.innerHTML = `<div class="news-empty">${lang==='ta'?'புதிய செய்தி இல்லை':'No new updates'}</div>`; return; }
+  panel.innerHTML = items.map(n => {
+    const txt = lang==='ta'?n.ta:n.en;
+    const open = n.url ? `onclick="window.open('${n.url}','_blank','noopener')"` : '';
+    return `<div class="news-item" data-id="${n.id}" ${open}>
+      <span class="news-emoji">${n.emoji}</span>
+      <span class="news-txt">${txt}</span>
+      <button class="news-close" onclick="event.stopPropagation();dismissNews('${n.id}')" aria-label="Dismiss">×</button>
+    </div>`;
+  }).join('');
+}
+function toggleNewsPanel(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById('newsPanel');
+  if (!panel) return;
+  const open = panel.hasAttribute('hidden');
+  panel.hidden = !open;
+  if (open) renderNewsPanel();
+}
+function dismissNews(id) {
+  const d = getDismissedNews();
+  if (!d.includes(id)) d.push(id);
+  localStorage.setItem('tvk-news-dismissed', JSON.stringify(d));
+  renderNewsPanel();
+}
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('newsPanel');
+  if (!panel || panel.hidden) return;
+  if (!panel.contains(e.target) && !e.target.closest('#bellBtn')) panel.hidden = true;
+});
+
 // ─── INIT ───
 function initApp() {
   readURL();
@@ -191,6 +237,7 @@ function initApp() {
     buildTab(0);
     tabBuilt[0] = true;
   }
+  renderNewsPanel();
 }
 // Defer init until all tab scripts are loaded
 document.addEventListener('DOMContentLoaded', initApp);
