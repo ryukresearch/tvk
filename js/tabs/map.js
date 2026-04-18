@@ -13,8 +13,7 @@ function buildMap() {
       <div class="chip-row" id="ovChips"></div>
       <div class="ov-desc" id="ovDesc"></div>
       <div class="map-box">
-        <!-- viewBox tuned: tight left/right, generous vertical, aspect ~0.72 -->
-        <svg id="mapSvg" viewBox="40 60 340 490" preserveAspectRatio="xMidYMid meet"></svg>
+        <svg id="mapSvg" viewBox="0 0 500 700" preserveAspectRatio="xMidYMid meet"></svg>
         <div class="map-leg" id="mapLeg"></div>
       </div>
       <div>
@@ -133,49 +132,24 @@ function updateLeg() {
 
 function drawMap(list) {
   const svg = document.getElementById('mapSvg');
-  if (!svg) return;
-  svg.innerHTML = '';
-  const isMob = window.innerWidth < 768;
-
-  // TN outline path (soft decorative)
-  const path = document.createElementNS(SVG_NS, "path");
-  path.setAttribute("d", "M260 80L310 100L330 130L340 160L330 190L310 210L300 240L310 270L300 300L280 330L290 360L280 390L270 420L250 440L220 470L200 500L175 515L160 495L150 460L140 430L130 400L120 370L110 340L100 310L90 280L85 250L90 230L100 210L120 190L140 170L170 155L200 140L220 120L240 100Z");
-  path.setAttribute("fill", "rgba(233,69,96,.025)");
-  path.setAttribute("stroke", "rgba(233,69,96,.1)");
-  path.setAttribute("stroke-width", "1");
-  svg.appendChild(path);
-
-  list.forEach(c => {
-    const [x, y] = gp(c);
-    // Pulse ring for Vijay seats
-    if (c.isV) {
-      const pr = document.createElementNS(SVG_NS, "circle");
-      pr.setAttribute("cx", x); pr.setAttribute("cy", y);
-      pr.setAttribute("r", isMob ? "12" : "10");
-      pr.setAttribute("fill", "none");
-      pr.setAttribute("stroke", "#ff1744");
-      pr.setAttribute("stroke-width", "1");
-      pr.classList.add("pulse-r");
-      svg.appendChild(pr);
-    }
-    const ci = document.createElementNS(SVG_NS, "circle");
+  if (!svg || typeof AC_PATHS === 'undefined') return;
+  const visible = new Set(list.map(c => c.n));
+  // Build once per call; cheap for 234 paths.
+  const frag = [];
+  ALL.forEach(c => {
+    const d = AC_PATHS[c.n]; if (!d) return;
+    const fill = bc(c);
     const isSel = sel === c.n;
-    ci.setAttribute("cx", x); ci.setAttribute("cy", y);
-    // Visible dot: sized so neighbouring dots never overlap (stagger 6-10 in gp()).
-    ci.setAttribute("r", c.isV ? (isMob?5.5:3.2) : isSel ? (isMob?5:2.8) : (isMob?3.4:2));
-    ci.setAttribute("fill", bc(c));
-    ci.setAttribute("opacity", isSel ? "1" : ".78");
-    if (isSel) { ci.setAttribute("stroke", "#fff"); ci.setAttribute("stroke-width", "1.5"); }
-    ci.classList.add("dot");
-    ci.setAttribute("pointer-events", "none");
-    svg.appendChild(ci);
-    // Invisible, larger tap target so dots are easy to tap without visual overlap.
-    const hit = document.createElementNS(SVG_NS, "circle");
-    hit.setAttribute("cx", x); hit.setAttribute("cy", y);
-    hit.setAttribute("r", isMob ? 8 : 5.5);
-    hit.classList.add("dot-hit");
-    hit.addEventListener("click", () => selectSeat(c.n));
-    svg.appendChild(hit);
+    const isVis = visible.has(c.n);
+    const cls = ['ac'];
+    if (isSel) cls.push('on');
+    if (!isVis) cls.push('dim');
+    if (c.isV) cls.push('vijay');
+    frag.push(`<path class="${cls.join(' ')}" data-n="${c.n}" d="${d}" fill="${fill}"/>`);
+  });
+  svg.innerHTML = frag.join('');
+  svg.querySelectorAll('path.ac').forEach(p => {
+    p.addEventListener('click', () => selectSeat(+p.dataset.n));
   });
 }
 
@@ -261,7 +235,7 @@ function showDet() {
   if (res21) {
     const wp = PARTY[res21.wp] || PARTY.OTH;
     const rp = PARTY[res21.rp] || PARTY.OTH;
-    const winName = res21.wn ? `<div class="p21-wn">${res21.wn}</div>` : '';
+    const winName = res21.wn ? `<div class="p21-wn">${res21.wn} <span class="crown" title="2021 winner">👑</span></div>` : '';
     const turnout = res21.pv ? `<span class="p21-turnout">${res21.pv}% ${lang==='ta'?'வாக்களிப்பு':'turnout'}</span>` : '';
     const mpct = res21.mp ? `<span class="p21-mpct">· ${res21.mp}%</span>` : '';
     html2021 = `<div class="dc">
@@ -287,7 +261,9 @@ function showDet() {
       <div class="demo-t">${t('opponents_2026')}</div>
       ${oppEntries.map(([pk, name]) => {
         const p = PARTY[pk] || PARTY.OTH;
-        return `<div class="opp-row"><span class="party-flag" style="background:${p.c}">${lang==='ta'?p.ta:p.en}</span><span class="opp-n">${name}</span></div>`;
+        const won = res21 && res21.wp === pk;
+        const crown = won ? ` <span class="crown" title="${lang==='ta'?'2021 வெற்றி':'Won in 2021'}">👑</span>` : '';
+        return `<div class="opp-row ${won?'opp-won':''}"><span class="party-flag" style="background:${p.c}">${lang==='ta'?p.ta:p.en}</span><span class="opp-n">${name}${crown}</span></div>`;
       }).join('')}
     </div>`;
   }

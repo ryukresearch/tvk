@@ -62,30 +62,34 @@ function buildPulse() {
       <div class="benefit-hero-r" aria-hidden="true"></div>
     </div>
 
+    <div class="philo-thesis">"${lang==='ta'?(PHILO.thesis.ta):PHILO.thesis.en}"</div>
+    <div class="philo-grid">
+      <div class="philo-card" style="--pc:#8b5cf6"><div class="philo-ttl">Aram · ${lang==='ta'?'அறம்':'Virtue'}</div><div class="philo-q">${lang==='ta'?PHILO.pillars.aram.ta:PHILO.pillars.aram.en}</div><div class="philo-sub">Thoon 1–2</div></div>
+      <div class="philo-card" style="--pc:#e94560"><div class="philo-ttl">Porul · ${lang==='ta'?'பொருள்':'Wealth'}</div><div class="philo-q">${lang==='ta'?PHILO.pillars.porul.ta:PHILO.pillars.porul.en}</div><div class="philo-sub">Thoon 3–7</div></div>
+      <div class="philo-card" style="--pc:#10b981"><div class="philo-ttl">Inbam · ${lang==='ta'?'இன்பம்':'Joy'}</div><div class="philo-q">${lang==='ta'?PHILO.pillars.inbam.ta:PHILO.pillars.inbam.en}</div><div class="philo-sub">Thoon 8–10</div></div>
+    </div>
     <div class="p-hook">${t('hook_pulse')}</div>
     <div class="p-headline">${t('headline_1')}<br><em>${t('headline_2')}</em></div>
-    <div class="p-sub">${t('sub_pulse')}</div>
     <div class="big-num-grid">
-      <div class="big-num"><div class="n count-up" data-to="234">0</div><div class="l">${t('bn_seats')}</div><div class="s">${t('bn_seats_s')}</div></div>
-      <div class="big-num"><div class="n count-up" data-to="50">0</div><div class="l">${t('bn_promises')}</div><div class="s">${t('bn_promises_s')}</div></div>
-      <div class="big-num"><div class="n">₹15,000<span style="font-size:.6em"> Cr</span></div><div class="l">${t('bn_cr')}</div><div class="s">${t('bn_cr_s')}</div></div>
-      <div class="big-num"><div class="n">₹2,500</div><div class="l">${t('bn_women')}</div><div class="s">${t('bn_women_s')}</div></div>
+      <div class="big-num"><div class="n count-up" data-to="234">0</div><div class="l">${lang==='ta'?'தொகுதிகள்':'Seats contested'}</div><div class="s">${lang==='ta'?'தனியாக · கூட்டணி இல்லை':'Solo · no alliance'}</div></div>
+      <div class="big-num"><div class="n count-up" data-to="10">0</div><div class="l">${lang==='ta'?'தூண்கள்':'Manifesto Thoons'}</div><div class="s">${lang==='ta'?'3 பகுதிகள் · அறம்/பொருள்/இன்பம்':'3 pillars · Aram / Porul / Inbam'}</div></div>
+      <div class="big-num"><div class="n">₹50K<span style="font-size:.6em"> Cr</span></div><div class="l">TNSIA</div><div class="s">${lang==='ta'?'மூலோபாய முதலீட்டு அமைப்பு':'Strategic Investment Authority'}</div></div>
+      <div class="big-num"><div class="n">₹2,500</div><div class="l">${lang==='ta'?'மகளிர் உதவி':'Women stipend'}</div><div class="s">${lang==='ta'?'மாதம் · 60 வயது வரை':'Per month · up to 60'}</div></div>
     </div>
   </div>
 
   <div class="tab-sec fade-in">
-    <div class="sec-label">${t('big3_label')}</div>
-    <div class="sec-title">${t('big3_title')}</div>
-    <div class="hero-promises">
-      ${big3.map(p => {
-        const cc = (CATS[p.cat] && CATS[p.cat].c) || '#e94560';
-        return `<div class="hp" style="--cat:${cc}" onclick="openPromiseById('${p.id}')">
-          <div class="hp-num"><span class="hp-dot" style="background:${cc}"></span>PROMISE ${p.num}</div>
-          <div class="hp-title">${p.title}</div>
-          <div class="hp-desc">${p.desc}</div>
-          <div class="hp-metric">${p.metric}</div>
-        </div>`;
-      }).join('')}
+    <div class="fiscal-card">
+      <div class="fiscal-hdr">${lang==='ta'?'நிதி நிலவரம்':'FISCAL REALITY'}</div>
+      <div class="fiscal-row">
+        <div class="fiscal-num">${PHILO.fiscal.debt.v}</div>
+        <div class="fiscal-lbl">${lang==='ta'?PHILO.fiscal.debt.ta:PHILO.fiscal.debt.en}</div>
+      </div>
+      <div class="fiscal-line">${lang==='ta'?PHILO.fiscal.debtLine.ta:PHILO.fiscal.debtLine.en}</div>
+      <div class="fiscal-row fiscal-ans">
+        <div class="fiscal-num" style="color:#fbbf24">${PHILO.fiscal.answer.v}</div>
+        <div class="fiscal-lbl">${lang==='ta'?PHILO.fiscal.answer.ta:PHILO.fiscal.answer.en}</div>
+      </div>
     </div>
   </div>
 
@@ -119,11 +123,34 @@ function buildPulse() {
   <div class="tab-sec fade-in">
     <div class="sec-label">${t('first_label')}</div>
     <div class="sec-title">${t('first_title')}</div>
-    <div class="mini-tl">
-      <div class="mtl"><b>${lang==='ta'?'நாள் 1':'DAY 1'}</b><p>${lang==='ta'?'பேருந்துப் பயணம் இலவசம்':'Free bus travel'}</p><small>${lang==='ta'?'நிர்வாக உத்தரவு':'Executive order'}</small></div>
-      <div class="mtl"><b>${lang==='ta'?'30 நாள்':'30 DAYS'}</b><p>${lang==='ta'?'காவல்துறை சம்பள உயர்வு':'Police salary hike'}</p><small>₹18.2K → ₹25K</small></div>
-      <div class="mtl"><b>${lang==='ta'?'3 மாதம்':'3 MONTHS'}</b><p>${lang==='ta'?'₹2,500 பெண்கள் உதவி':'₹2,500 women stipend'}</p><small>${lang==='ta'?'~2.6 கோடி பயனாளிகள்':'~2.6Cr beneficiaries'}</small></div>
-      <div class="mtl"><b>${lang==='ta'?'1 ஆண்டு':'1 YEAR'}</b><p>${lang==='ta'?'விவசாயக் கடன் தள்ளுபடி':'Farm loan waiver'}</p><small>${lang==='ta'?'~72 லட்சம் குடும்பங்கள்':'~72L households'}</small></div>
+    <div class="mini-tl mini-tl-5">
+      <div class="mtl"><b>${lang==='ta'?'நாள் 1':'DAY 1'}</b><p>${lang==='ta'?'இலவச பேருந்து':'Free bus travel'}</p><small>${lang==='ta'?'நிர்வாக உத்தரவு':'Executive order'}</small></div>
+      <div class="mtl"><b>${lang==='ta'?'30 நாட்கள்':'30 DAYS'}</b><p>${lang==='ta'?'காவல் சம்பளம் உயர்வு · போதைப் பொருள் தடை':'Police pay + anti-drug zones'}</p><small>₹18.2K → ₹25K</small></div>
+      <div class="mtl"><b>${lang==='ta'?'90 நாட்கள்':'90 DAYS'}</b><p>${lang==='ta'?'₹2,500 மகளிர் உதவி':'Women ₹2,500/mo rollout'}</p><small>Madhippumigu Magalir</small></div>
+      <div class="mtl"><b>${lang==='ta'?'6 மாதம்':'6 MONTHS'}</b><p>${lang==='ta'?'விவசாய கடன் தள்ளுபடி':'Farm loan waiver processing'}</p><small><5 acres · 100%</small></div>
+      <div class="mtl"><b>${lang==='ta'?'1 ஆண்டு':'1 YEAR'}</b><p>${lang==='ta'?'TNSIA செயல்பாடு · கலைப் பள்ளிகள்':'TNSIA operational · Creative schools'}</p><small>₹50,000 Cr</small></div>
+    </div>
+  </div>
+
+  <div class="tab-sec fade-in">
+    <div class="sec-label">${lang==='ta'?'பண்பாடு & சுற்றுலா':'CULTURE & TOURISM'}</div>
+    <div class="sec-title">${lang==='ta'?'Thoon 01 — தமிழ் அடையாளம்':'Thoon 01 — Tamil Identity'}</div>
+    <div class="tour-strip">
+      <div class="tour-c"><b>4</b><span>${lang==='ta'?'ஆன்மீக சுற்றுலா பாதைகள்':'Spiritual routes'}</span></div>
+      <div class="tour-c"><b>⛰</b><span>${lang==='ta'?'நீலகிரி சாகச சுற்றுலா':'Nilgiris adventure'}</span></div>
+      <div class="tour-c"><b>🚤</b><span>${lang==='ta'?'வேதாரண்யம் → ராமேஸ்வரம்':'Vedaranyam → Rameswaram'}</span></div>
+      <div class="tour-c"><b>🚐</b><span>${lang==='ta'?'கேரவன் சுற்றுலா':'Caravan tourism policy'}</span></div>
+      <div class="tour-c"><b>AR/VR</b><span>${lang==='ta'?'கீழடி · ஆதிசனல்லூர்':'Keeladi · Adichanallur'}</span></div>
+      <div class="tour-c"><b>🤖</b><span>${lang==='ta'?'தமிழ் AI மாதிரி':'Tamil AI model'}</span></div>
+      <div class="tour-c"><b>1,000</b><span>${lang==='ta'?'சிலம்பம் மையங்கள்':'Silambam centres'}</span></div>
+    </div>
+  </div>
+
+  <div class="tab-sec fade-in">
+    <div class="sec-label">${lang==='ta'?'கருத்தியல் மூதாதையர்':'IDEOLOGICAL LEGACY'}</div>
+    <div class="sec-title">${lang==='ta'?'5 தலைவர்கள் · ஒரு கொள்கை':'Five names, one philosophy'}</div>
+    <div class="leader-strip">
+      ${PHILO.leaders.map(L=>`<div class="leader"><div class="leader-av">${L.n[0]}</div><div class="leader-n">${lang==='ta'?L.ta:L.n}</div><div class="leader-r">${L.role}</div></div>`).join('')}
     </div>
   </div>
 

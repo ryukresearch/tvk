@@ -25,6 +25,12 @@ function buildPromises(){
         <div class="pers-txt"><b>${t(p.lk)}</b><small>${t(p.sk)}</small></div>
       </button>`).join('')}
     </div>
+    <div class="pillar-chips" id="pillarChips">
+      <button class="pchip on" data-p="all" onclick="setPillar('all')">${lang==='ta'?'அனைத்தும்':'All'}</button>
+      <button class="pchip" data-p="aram"  onclick="setPillar('aram')"  style="--pc:#8b5cf6">அறம் · Aram</button>
+      <button class="pchip" data-p="porul" onclick="setPillar('porul')" style="--pc:#e94560">பொருள் · Porul</button>
+      <button class="pchip" data-p="inbam" onclick="setPillar('inbam')" style="--pc:#10b981">இன்பம் · Inbam</button>
+    </div>
     <div class="view-row">
       <div class="view-toggle" id="promView">
         <button class="vt on" data-v="const" onclick="setPromiseView('const')">${lang==='ta'?'நட்சத்திரம்':'Constellation'}</button>
@@ -112,72 +118,143 @@ function setPersona(k){
   document.querySelectorAll('.pers').forEach(b=>b.classList.remove('on'));
   document.querySelector(`.pers[onclick="setPersona('${k}')"]`)?.classList.add('on');
   renderPromiseCards();
-  if (promiseView === 'const') renderConstellation('constWrap', persona);
+  if (typeof renderConstellation === 'function') renderConstellation('constWrap', persona);
   updateURL();
+}
+
+// Compact money/unit formatter: "3500 rupees" → "₹3.5K", "15,000 crore" → "₹15K Cr", "5 lakh" → "₹5L"
+function fmtMetric(s){
+  if(!s) return '';
+  let m = s.trim();
+  // Pure % passthrough
+  if(/^\d+(?:\.\d+)?\s*%$/.test(m)) return m.replace(/\s+/g,'');
+  // Parse numeric head
+  const match = m.match(/^₹?\s*([\d,]+(?:\.\d+)?)\s*(crore|cr|lakh|l|k|thousand|rupees?)?\b\s*(.*)$/i);
+  if(!match){
+    // Unit-only like "8 grams","200 km","5 acres" — compact spacing
+    return m.replace(/(\d+(?:,\d+)*(?:\.\d+)?)\s+(grams?|km|acres?|beds?|years?|months?|days?|units?|cylinders?)/ig,(_,n,u)=>{
+      const unitShort = {gram:'g',grams:'g',year:'y',years:'y',month:'mo',months:'mo',day:'d',days:'d'}[u.toLowerCase()]||u;
+      return n+unitShort;
+    });
+  }
+  const n = parseFloat(match[1].replace(/,/g,''));
+  const unit = (match[2]||'').toLowerCase();
+  const rest = match[3]||'';
+  let out='';
+  if(unit==='crore'||unit==='cr'){ out = n>=1000 ? '₹'+(n/1000)+'K Cr' : '₹'+n+' Cr'; }
+  else if(unit==='lakh'||unit==='l'){ out = '₹'+n+'L'; }
+  else if(unit==='k'||unit==='thousand'){ out = '₹'+n+'K'; }
+  else if(unit==='rupee'||unit==='rupees'){
+    // Plain rupees → choose best abbreviation
+    if(n>=1e7) out='₹'+(n/1e7).toFixed(n>=1e8?0:1).replace(/\.0$/,'')+' Cr';
+    else if(n>=1e5) out='₹'+(n/1e5).toFixed(n>=1e6?0:1).replace(/\.0$/,'')+'L';
+    else if(n>=1000) out='₹'+(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'K';
+    else out='₹'+n;
+  }
+  else{ out = (s.startsWith('₹')?'':'₹')+n; }
+  return out + (rest?' '+rest.trim():'');
+}
+
+let pillarFilter = 'all';
+function setPillar(p){
+  pillarFilter = p;
+  document.querySelectorAll('#pillarChips .pchip').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+  renderPromiseCards();
+  if (typeof renderConstellation === 'function') renderConstellation('constWrap', persona);
 }
 
 function renderPromiseCards(){
   const g=document.getElementById('promiseGrid');if(!g)return;
-  const fl=persona==='all'?PROMISES:PROMISES.filter(p=>p.personas.includes(persona));
-  g.innerHTML=fl.map(p=>{
-    const loc=p[lang]||p.en;
-    const c=CATS[p.c];
-    return`<div class="pc" onclick="showPromiseModal(${JSON.stringify(p.id)})">
-      <span class="pc-tag" style="background:${c.c}22;color:${c.c}">${catLabel(p.c)}</span>
-      <div class="pc-title">${loc.t}</div>
-      <div class="pc-desc">${loc.d}</div>
-      <div class="pc-foot">
-        ${p.metric?`<span class="pc-metric" style="background:${c.c}1a;color:${c.c}">${p.metric}</span>`:''}
-        <span class="pc-ben">${loc.benefits||''}</span>
+  let items = (typeof MANIFESTO !== 'undefined') ? MANIFESTO.slice() : [];
+  if(persona !== 'all') items = items.filter(x => x.personas && (x.personas.includes(persona) || (x.personas.length===1 && x.personas[0]==='all')));
+  if(pillarFilter !== 'all') items = items.filter(x => x.pillar === pillarFilter);
+  if(!items.length){ g.innerHTML = `<div style="padding:32px;text-align:center;color:var(--t3)">No matches.</div>`; return; }
+  const byThoon = {};
+  items.forEach(p => { (byThoon[p.thoon] = byThoon[p.thoon] || []).push(p); });
+  g.innerHTML = Object.keys(byThoon).sort((a,b)=>+a-+b).map(tn => {
+    const th = THOONS[tn] || {en:'Thoon '+tn, pillar:'aram'};
+    const pl = PILLARS[th.pillar] || {c:'#e94560', ta:'', en:''};
+    return `<div class="thoon-grp" style="--pc:${pl.c}">
+      <div class="thoon-hd">
+        <span class="thoon-n">${tn}</span>
+        <div class="thoon-ti"><b>${th.en}</b><small>${pl.ta} · ${pl.en}</small></div>
+        <span class="thoon-ct">${byThoon[tn].length}</span>
+      </div>
+      <div class="thoon-body">
+      ${byThoon[tn].map(p => {
+        const title = p.title.replace(/^[A-Z]\.\s*/, '').replace(/[:;]+$/,'');
+        const descShort = p.desc.length > 90 ? p.desc.slice(0, 88).replace(/\s+\S*$/,'') + '…' : p.desc;
+        const m = fmtMetric(p.metric);
+        return `<div class="pc" onclick="showPromiseModal('${p.id}')">
+        ${m?`<span class="pc-metric" style="background:${pl.c}1a;color:${pl.c}">${m}</span>`:''}
+        <div class="pc-title">${title}</div>
+        <div class="pc-desc">${descShort}</div>
+      </div>`;}).join('')}
       </div>
     </div>`;
   }).join('');
 }
 
 function showPromiseModal(id){
-  const p=typeof id==='string'?PROMISES.find(x=>x.id===id):id;
-  if(!p)return;
-  const loc=p[lang]||p.en;
-  const c=CATS[p.c];
+  // Try MANIFESTO first, fall back to legacy PROMISES
+  let m = null;
+  if (typeof MANIFESTO !== 'undefined') m = MANIFESTO.find(x => x.id === id);
+  if (m) {
+    const th = THOONS[m.thoon], pl = PILLARS[m.pillar];
+    const h = `
+      <div class="modal-hd">
+        <button class="modal-x" onclick="closeModal()">✕</button>
+        <span class="modal-tag" style="background:${pl.c}22;color:${pl.c}">Thoon ${m.thoon} · ${th.en}</span>
+        <div class="modal-title">${m.title}</div>
+        ${m.scheme?`<div class="modal-scheme">${m.scheme}</div>`:''}
+      </div>
+      <div class="modal-body">
+        ${m.metric?`<div class="modal-sec"><h4>${t('context_benefits')||'Metric'}</h4><p><b style="color:${pl.c};font-family:var(--mono);font-size:20px">${fmtMetric(m.metric)}</b></p></div>`:''}
+        <div class="modal-sec"><p>${m.desc}</p></div>
+        <div class="modal-sec"><h4>Pillar</h4><p><b style="color:${pl.c}">${pl.en} · ${pl.ta}</b> — ${pl.sub}</p></div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn" onclick="closeModal();switchTab(2)">${t('show_on_map')||'Show on map'}</button>
+        <button class="btn btn-ghost" onclick="closeModal()">${t('close')||'Close'}</button>
+      </div>`;
+    openModal(h); return;
+  }
+  // Legacy PROMISES path (for constellation on old IDs)
+  const p = typeof id==='string' ? PROMISES.find(x=>x.id===id) : id;
+  if(!p) return;
+  const loc=p[lang]||p.en, c=CATS[p.c];
   const ctxRows=[
     {k:'compare',ic:'⚖',col:'#3b82f6',txt:loc.compare},
     {k:'legal',ic:'§',col:'#a855f7',txt:loc.legal},
     {k:'fiscal',ic:'₹',col:'#10b981',txt:loc.fiscal},
     {k:'risk',ic:'⚠',col:'#ef4444',txt:loc.risk}
   ].filter(r=>r.txt);
-  const h=`
-    <div class="modal-hd">
-      <button class="modal-x" onclick="closeModal()">✕</button>
+  openModal(`
+    <div class="modal-hd"><button class="modal-x" onclick="closeModal()">✕</button>
       <span class="modal-tag" style="background:${c.c}22;color:${c.c}">${catLabel(p.c)}</span>
-      <div class="modal-title">${loc.t}</div>
-    </div>
+      <div class="modal-title">${loc.t}</div></div>
     <div class="modal-body">
       <div class="modal-sec"><p>${loc.d}</p></div>
       ${p.metric?`<div class="modal-sec"><h4>${t('context_benefits')}</h4><p><b style="color:${c.c};font-family:var(--mono);font-size:18px">${p.metric}</b>${loc.benefits?` · ${loc.benefits}`:''}</p></div>`:loc.benefits?`<div class="modal-sec"><h4>${t('context_benefits')}</h4><p>${loc.benefits}</p></div>`:''}
       ${ctxRows.map(r=>`<div class="ctx-row" style="--ctx-c:${r.col}"><div class="ctx-ic">${r.ic}</div><div class="ctx-txt"><b>${t('context_'+r.k)}</b><p>${r.txt}</p></div></div>`).join('')}
     </div>
-    <div class="modal-ft">
-      <button class="btn" onclick="closeModal();switchTab(2)">${t('show_on_map')}</button>
-      <button class="btn btn-ghost" onclick="closeModal()">${t('close')}</button>
-    </div>`;
-  openModal(h);
+    <div class="modal-ft"><button class="btn" onclick="closeModal();switchTab(2)">${t('show_on_map')}</button>
+      <button class="btn btn-ghost" onclick="closeModal()">${t('close')}</button></div>`);
 }
 
 function renderH2H(){
   const g=document.getElementById('h2hGrid');if(!g)return;
   const data=[
-    {l:"Women's aid",tvk:"₹2,500",dmk:"₹1,000",aiadmk:"₹1,000"},
-    {l:"LPG cylinders",tvk:"6/yr",dmk:"3/yr",aiadmk:"3/yr"},
-    {l:"Bus travel",tvk:"All buses",dmk:"Town only",aiadmk:"Town only"},
-    {l:"Edu loans",tvk:"₹20L free",dmk:"Partial",aiadmk:"₹10L"},
-    {l:"Youth aid",tvk:"₹4K/mo",dmk:"None",aiadmk:"₹3K"},
-    {l:"Jobs quota",tvk:"75% law",dmk:"None",aiadmk:"None"},
-    {l:"Internships",tvk:"5L/yr",dmk:"1L/yr",aiadmk:"None"},
-    {l:"Farm waiver",tvk:"100% <5ac",dmk:"Partial",aiadmk:"Partial"},
-    {l:"Paddy MSP",tvk:"₹3,500",dmk:"₹2,320",aiadmk:"₹2,800"},
-    {l:"MSME fund",tvk:"₹15K Cr",dmk:"Existing",aiadmk:"None"},
-    {l:"Police pay",tvk:"₹25K",dmk:"₹18.2K",aiadmk:"₹20K"},
-    {l:"Weaver aid",tvk:"₹30K/yr",dmk:"₹10K",aiadmk:"₹15K"}
+    {l:"Women ₹/mo (Madhippumigu)",tvk:"₹2,500",dmk:"₹1,000",aiadmk:"₹1,000"},
+    {l:"LPG cylinders (Annapoorani 6)",tvk:"6/yr",dmk:"3/yr",aiadmk:"3/yr"},
+    {l:"Bus (Vettri Payanam)",tvk:"All govt buses",dmk:"Town only",aiadmk:"Town only"},
+    {l:"Edu loans (collateral-free)",tvk:"₹20L",dmk:"Partial",aiadmk:"₹10L"},
+    {l:"Internships /yr at ₹10K/mo",tvk:"5L",dmk:"1L",aiadmk:"None"},
+    {l:"Paddy MSP (₹/qtl)",tvk:"₹3,500",dmk:"₹2,320",aiadmk:"₹2,800"},
+    {l:"Sugarcane MSP (₹/ton)",tvk:"₹4,500",dmk:"₹3,200",aiadmk:"₹3,400"},
+    {l:"MSME credit guarantee",tvk:"₹15,000 Cr",dmk:"Central only",aiadmk:"None"},
+    {l:"TNSIA strategic investment",tvk:"₹50,000 Cr",dmk:"None",aiadmk:"None"},
+    {l:"Police base salary",tvk:"₹18.2K→₹25K",dmk:"₹18.2K",aiadmk:"₹20K"}
   ];
   g.innerHTML=data.map(d=>`<div class="h2h">
     <div class="h2h-label">${d.l}</div>

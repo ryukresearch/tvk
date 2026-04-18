@@ -71,6 +71,40 @@ const PERSONA_ICON = {
   weaver: '🧵', all: '⭐'
 };
 
+// Build a compact, meaningful constellation label from a manifesto item.
+const STAR_FILLER = new Set(['scheme','act','welfare','rights','protection','the','and','for','of','a','to','in','on','as','by','at']);
+function starLabel(p) {
+  let t = (p.title || '').replace(/^[A-Z]\.\s*/, '').replace(/[:;]+$/, '').trim();
+  // Drop bracketed hints like "(SC)"
+  t = t.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+  const rawM = (p.metric || '').trim();
+  const m = (typeof fmtMetric === 'function' ? fmtMetric(rawM) : rawM);
+  const mShort = m && m.length <= 14 ? m : '';
+  // Split, keep meaningful words — prefer those the user would recognize
+  const words = t.split(/\s+/);
+  let kept = words.filter(w => !STAR_FILLER.has(w.toLowerCase().replace(/[.,]/g,'')));
+  if (kept.length < 2) kept = words;
+  let head = kept.slice(0, 3).join(' ');
+  if (head.length > 22) head = head.slice(0, 20).replace(/\s+\S*$/, '') + '…';
+  const out = mShort ? `${mShort} · ${head}` : head;
+  return out.length > 28 ? out.slice(0, 26) + '…' : out;
+}
+
+// Derive per-person estimate + impact + short label from a manifesto item.
+function deriveStar(item) {
+  const m = item.metric || '';
+  const money = m.match(/₹\s*([\d,\.]+)\s*(crore|Cr|lakh|L|K|thousand)?/i);
+  let yr = 0, impact = 4;
+  if (money) {
+    const n = parseFloat(money[1].replace(/,/g,''));
+    const u = (money[2]||'').toLowerCase();
+    yr = u.startsWith('cr')||u.startsWith('crore')?n*1e7 : u.startsWith('l')||u.startsWith('la')?n*1e5 : u.startsWith('k')||u.startsWith('th')?n*1e3 : n;
+    impact = 9;
+  } else if (/\d+\s*%/.test(m)) impact = 7;
+  else if (/\b\d{2,}/.test(m)) impact = 6;
+  return { yr, impact };
+}
+
 // Short labels shown next to each constellation star (EN + TA). 1-3 words.
 const SHORT_LABEL = {
   'w-stipend':{en:'₹2.5K women',ta:'₹2.5K பெண்'},'w-lpg':{en:'6 LPG/yr',ta:'6 LPG'},
@@ -107,35 +141,55 @@ function renderConstellation(containerId, personaKey) {
   const el = document.getElementById(containerId);
   if (!el) return;
   const pk = personaKey || persona || 'all';
-  const matches = (pk === 'all')
-    ? PROMISES.slice()
-    : PROMISES.filter(p => p.personas.includes(pk));
-  // Sort by impact desc so biggest benefits activate first
-  matches.sort((a, b) => (PROMISE_VAL[b.id]?.impact || 0) - (PROMISE_VAL[a.id]?.impact || 0));
+  const src = (typeof MANIFESTO !== 'undefined' && MANIFESTO.length) ? MANIFESTO : PROMISES;
+  const isManifesto = src === MANIFESTO;
+  let matches = src.slice();
+  if (pk !== 'all') matches = matches.filter(p => p.personas && (p.personas.includes(pk) || (p.personas.length===1 && p.personas[0]==='all')));
+  const pf = (typeof pillarFilter !== 'undefined') ? pillarFilter : 'all';
+  if (isManifesto && pf !== 'all') matches = matches.filter(p => p.pillar === pf);
+  // Attach derived vals; sort by impact desc
+  matches.forEach(p => { if (isManifesto) p._v = p._v || deriveStar(p); });
+  matches.sort((a, b) => {
+    const av = isManifesto ? a._v : (PROMISE_VAL[a.id] || {yr:0,impact:0});
+    const bv = isManifesto ? b._v : (PROMISE_VAL[b.id] || {yr:0,impact:0});
+    // Primary: impact; secondary: ₹ yr value
+    return (bv.impact - av.impact) || (bv.yr - av.yr);
+  });
+  // Cap graph to top 15 by impact — cards view already shows everything
+  matches = matches.slice(0, 15);
 
   const N = matches.length;
   const cx = 200, cy = 200;
   const baseR = 105;
   const isMob = window.innerWidth < 768;
-  const filledMax = isMob ? (lang === 'ta' ? 4 : 6) : (lang === 'ta' ? 13 : 15);
+  const filledMax = isMob ? 6 : (lang === 'ta' ? 12 : 15);
+  const labelMax = filledMax;
   const stars = matches.map((p, i) => {
-    const v = PROMISE_VAL[p.id] || {yr: 0, impact: 5};
+    const v = isManifesto ? p._v : (PROMISE_VAL[p.id] || {yr:0, impact:5});
     const ring = i % 3;
     const r = baseR + ring * 28 + (Math.sin(i * 3.17) * 8);
     const angle = (i / N) * Math.PI * 2 + Math.cos(i * 1.7) * 0.08;
     const x = cx + Math.cos(angle) * r;
     const y = cy + Math.sin(angle) * r;
     const size = 3.5 + (v.impact / 10) * 7;
-    const color = (CATS[p.c] && CATS[p.c].c) || '#ec4899';
-    const lbl = SHORT_LABEL[p.id];
-    const labelTxt = lbl ? (lang === 'ta' ? lbl.ta : lbl.en) : '';
+    const color = isManifesto
+      ? ((typeof PILLARS !== 'undefined' && PILLARS[p.pillar] && PILLARS[p.pillar].c) || '#e94560')
+      : ((CATS[p.c] && CATS[p.c].c) || '#ec4899');
+    let labelTxt = '';
+    if (isManifesto) {
+      labelTxt = starLabel(p);
+    } else {
+      const lbl = SHORT_LABEL[p.id];
+      labelTxt = lbl ? (lang === 'ta' ? lbl.ta : lbl.en) : '';
+    }
     // Push label outward from center along the star's radial direction
     const dx = x - cx, dy = y - cy, dd = Math.hypot(dx, dy) || 1;
     const lx = x + (dx / dd) * (size + 10);
     const ly = y + (dy / dd) * (size + 10) + 3;
     const anchor = lx < cx - 8 ? 'end' : lx > cx + 8 ? 'start' : 'middle';
     const filled = i < filledMax;
-    return {p, x, y, size, color, v, labelTxt, lx, ly, anchor, filled};
+    const showLabel = i < labelMax && labelTxt;
+    return {p, x, y, size, color, v, labelTxt: showLabel ? labelTxt : '', lx, ly, anchor, filled};
   });
 
   const totalYr = stars.reduce((s, st) => s + (st.v.yr || 0), 0);
