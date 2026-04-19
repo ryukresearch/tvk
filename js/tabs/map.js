@@ -16,14 +16,13 @@ function buildMap() {
         <div class="m-search"><input type="search" id="mSearch" autocomplete="off" placeholder="${lang==='ta'?'தொகுதி பெயர் தேடவும்...':'Type or pick a constituency...'}" oninput="filterMap(this.value);mSug(this.value)" onfocus="mSug(this.value)" onblur="setTimeout(()=>{const s=document.getElementById('sugBox');if(s)s.style.display='none'},160)"><div id="sugBox" class="sug-box" hidden></div></div>
       </div>
       <div class="chip-row" id="ovChips"></div>
-      <div class="ov-desc" id="ovDesc"></div>
+      <div class="map-meta">
+        <span class="ov-desc" id="ovDesc"></span>
+        <span class="map-count" id="mapCount"></span>
+      </div>
       <div class="map-box">
         <svg id="mapSvg" viewBox="0 0 500 700" preserveAspectRatio="xMidYMid meet"></svg>
         <div class="map-leg" id="mapLeg"></div>
-      </div>
-      <div>
-        <div class="m-list-h" id="listH">${lang==='ta'?'அனைத்து தொகுதிகள்':'All Constituencies'}</div>
-        <div class="m-list" id="listW"></div>
       </div>
     </div>
     <div class="detail" id="detP">
@@ -56,7 +55,7 @@ function buildMap() {
   ).join('');
 
   drawMap(filtered || ALL);
-  buildList(filtered || ALL);
+  updateMapCount(filtered || ALL);
   updateLeg();
   updateOvDesc();
   showDet();
@@ -161,23 +160,22 @@ function drawMap(list) {
   });
 }
 
-function buildList(list) {
-  const el = document.getElementById('listW');
+// Tiny count pill beside the overlay description. Shows "234 seats" by default,
+// "38 of 234 match" when search narrows results.
+function updateMapCount(list) {
+  const el = document.getElementById('mapCount');
   if (!el) return;
-  document.getElementById('listH').textContent = (
-    list.length === ALL.length
-      ? (lang==='ta' ? 'அனைத்து தொகுதிகள்' : 'All Constituencies')
-      : `${list.length} ${lang==='ta' ? 'பொருந்துதல்' : 'Match'+(list.length!==1?'es':'')}`
-  );
-  const show = list.slice(0, 80);
-  el.innerHTML = show.map(c =>
-    `<div class="mli ${sel===c.n?'on':''}" onclick="selectSeat(${c.n})">
-      <span class="mli-n">#${c.n}</span>
-      <span class="mli-d" style="background:${bc(c)}"></span>
-      <span class="mli-nm ${c.isV?'vijay':''}">${c.nm}</span>
-      <span class="mli-v">${fmt(c.vt)}</span>
-    </div>`
-  ).join('') + (list.length>80 ? `<div style="font-size:10px;color:var(--t4);padding:8px;text-align:center">+ ${list.length-80} more</div>` : '');
+  const total = ALL.length;
+  const n = list.length;
+  if (n === total) {
+    el.textContent = `${total} ${lang==='ta'?'தொகுதி':'seats'}`;
+    el.classList.remove('filtered');
+  } else {
+    el.textContent = lang==='ta'
+      ? `${n} / ${total} பொருத்தம்`
+      : `${n} of ${total} match${n!==1?'es':''}`;
+    el.classList.add('filtered');
+  }
 }
 
 function mSug(q) {
@@ -216,7 +214,6 @@ function selectSeat(n) {
   sel = n;
   drawMap(filtered || ALL);
   showDet();
-  buildList(filtered || ALL);
   renderFlipList();
   updateURL();
   if (window.innerWidth < 768) {
@@ -371,5 +368,5 @@ function filterMap(q) {
     DISTS_TA[c.di].includes(ql)
   ) : null;
   drawMap(filtered || ALL);
-  buildList(filtered || ALL);
+  updateMapCount(filtered || ALL);
 }
