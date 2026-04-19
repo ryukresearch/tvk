@@ -102,18 +102,18 @@ function buildPromises(){
     <div class="sec-label">${t('money_label')}</div>
     <div class="sec-title">${t('money_title')}</div>
     <div class="tree">
-      <div class="trc big tr-1"><div class="a">₹15,000 Cr</div><div class="lb">MSME Credit Fund</div></div>
-      <div class="trc tr-2"><div class="a">₹50L</div><div class="lb">MSME Subsidy</div></div>
-      <div class="trc tr-3"><div class="a">₹25L</div><div class="lb">Youth Loans</div></div>
-      <div class="trc tr-3"><div class="a">₹20L</div><div class="lb">Education Loans</div></div>
-      <div class="trc tr-4"><div class="a">₹10L</div><div class="lb">Weaver Insurance</div></div>
-      <div class="trc tr-4"><div class="a">₹5L</div><div class="lb">SHG Loans</div></div>
-      <div class="trc tr-5"><div class="a">₹30K/yr</div><div class="lb">Weaver Aid</div></div>
-      <div class="trc tr-5"><div class="a">₹15K/yr</div><div class="lb">Education</div></div>
-      <div class="trc tr-5"><div class="a">₹10K/yr</div><div class="lb">Farmer Aid</div></div>
-      <div class="trc tr-6"><div class="a">₹4K/mo</div><div class="lb">Unemployed</div></div>
-      <div class="trc tr-6"><div class="a">₹2.5K/mo</div><div class="lb">Women</div></div>
-      <div class="trc tr-6"><div class="a">₹3K/mo</div><div class="lb">Weaver Pension</div></div>
+      <div class="trc big tr-1"><div class="a">₹15,000 Cr</div><div class="lb">${lang==='ta'?'MSME கடன் நிதி':'MSME Credit Fund'}</div></div>
+      <div class="trc tr-2"><div class="a">₹50L</div><div class="lb">${lang==='ta'?'MSME மானியம்':'MSME Subsidy'}</div></div>
+      <div class="trc tr-3"><div class="a">₹25L</div><div class="lb">${lang==='ta'?'இளைஞர் கடன்':'Youth Loans'}</div></div>
+      <div class="trc tr-3"><div class="a">₹20L</div><div class="lb">${lang==='ta'?'கல்வி கடன்':'Education Loans'}</div></div>
+      <div class="trc tr-4"><div class="a">₹10L</div><div class="lb">${lang==='ta'?'நெசவாளர் காப்பீடு':'Weaver Insurance'}</div></div>
+      <div class="trc tr-4"><div class="a">₹5L</div><div class="lb">${lang==='ta'?'SHG கடன்':'SHG Loans'}</div></div>
+      <div class="trc tr-5"><div class="a">₹30K/yr</div><div class="lb">${lang==='ta'?'நெசவாளர் உதவி':'Weaver Aid'}</div></div>
+      <div class="trc tr-5"><div class="a">₹15K/yr</div><div class="lb">${lang==='ta'?'கல்வி':'Education'}</div></div>
+      <div class="trc tr-5"><div class="a">₹10K/yr</div><div class="lb">${lang==='ta'?'விவசாய உதவி':'Farmer Aid'}</div></div>
+      <div class="trc tr-6"><div class="a">₹4K/mo</div><div class="lb">${lang==='ta'?'வேலையில்லா':'Unemployed'}</div></div>
+      <div class="trc tr-6"><div class="a">₹2.5K/mo</div><div class="lb">${lang==='ta'?'பெண்கள்':'Women'}</div></div>
+      <div class="trc tr-6"><div class="a">₹3K/mo</div><div class="lb">${lang==='ta'?'நெசவாளர் ஓய்வூதியம்':'Weaver Pension'}</div></div>
     </div>
   </div>
 
@@ -136,13 +136,19 @@ function buildPromises(){
     <div class="sec-label">${t('pay_label')}</div>
     <div class="sec-title">${t('pay_title')}</div>
     <div class="pay-grid">
-      ${[
+      ${(lang==='ta'?[
+        {l:'நெசவாளர்',a:'₹30,000',u:'/ஆண்டு'},{l:'கல்வி',a:'₹15,000',u:'/ஆண்டு'},
+        {l:'பயிற்சி',a:'₹10,000',u:'/மாதம்'},{l:'விவசாயி',a:'₹10,000',u:'/ஆண்டு'},
+        {l:'IT பயிற்சி',a:'₹8,000',u:'/மாதம்'},{l:'பட்டதாரி',a:'₹4,000',u:'/மாதம்'},
+        {l:'நெசவாளர் பென்',a:'₹3,000',u:'/மாதம்'},{l:'பெண்கள்',a:'₹2,500',u:'/மாதம்'},
+        {l:'டிப்ளமோ',a:'₹2,000',u:'/மாதம்'},{l:'காவல்',a:'₹1,000',u:'/மாதம்'}
+      ]:[
         {l:'Weaver Aid',a:'₹30,000',u:'/yr'},{l:'Education',a:'₹15,000',u:'/yr'},
         {l:'Intern',a:'₹10,000',u:'/mo'},{l:'Farmer',a:'₹10,000',u:'/yr'},
         {l:'IT Intern',a:'₹8,000',u:'/mo'},{l:'Grad Aid',a:'₹4,000',u:'/mo'},
         {l:'Weaver Pen.',a:'₹3,000',u:'/mo'},{l:'Women',a:'₹2,500',u:'/mo'},
         {l:'Diploma',a:'₹2,000',u:'/mo'},{l:'Police',a:'₹1,000',u:'/mo'}
-      ].map(p=>`<div class="pay"><div class="pay-amt">${p.a}</div><div class="pay-lbl">${p.l} ${p.u}</div></div>`).join('')}
+      ]).map(p=>`<div class="pay"><div class="pay-amt">${p.a}</div><div class="pay-lbl">${p.l} ${p.u}</div></div>`).join('')}
     </div>
   </div>
 
@@ -293,7 +299,19 @@ function showPromiseModal(id){
 
 function renderH2H(){
   const g=document.getElementById('h2hGrid');if(!g)return;
-  const data=[
+  const ta = lang==='ta';
+  const data = ta ? [
+    {l:"பெண்கள் ₹/மா (மதிப்புமிகு)",tvk:"₹2,500",dmk:"₹1,000",aiadmk:"₹1,000"},
+    {l:"LPG சிலிண்டர் (அன்னபூரணி 6)",tvk:"6/ஆ",dmk:"3/ஆ",aiadmk:"3/ஆ"},
+    {l:"பேருந்து (வெற்றி பயணம்)",tvk:"அனைத்து அரசு",dmk:"நகர் மட்டும்",aiadmk:"நகர் மட்டும்"},
+    {l:"கல்வி கடன் (பிணை இல்லா)",tvk:"₹20L",dmk:"பகுதி",aiadmk:"₹10L"},
+    {l:"பயிற்சி /ஆ · ₹10K/மா",tvk:"5L",dmk:"1L",aiadmk:"இல்லை"},
+    {l:"நெல் MSP (₹/குவி)",tvk:"₹3,500",dmk:"₹2,320",aiadmk:"₹2,800"},
+    {l:"கரும்பு MSP (₹/டன்)",tvk:"₹4,500",dmk:"₹3,200",aiadmk:"₹3,400"},
+    {l:"MSME கடன் உத்தரவாதம்",tvk:"₹15,000 Cr",dmk:"மத்தியம்",aiadmk:"இல்லை"},
+    {l:"TNSIA முதலீடு",tvk:"₹50,000 Cr",dmk:"இல்லை",aiadmk:"இல்லை"},
+    {l:"காவல் அடிப்படை சம்பளம்",tvk:"₹18.2K→₹25K",dmk:"₹18.2K",aiadmk:"₹20K"}
+  ] : [
     {l:"Women ₹/mo (Madhippumigu)",tvk:"₹2,500",dmk:"₹1,000",aiadmk:"₹1,000"},
     {l:"LPG cylinders (Annapoorani 6)",tvk:"6/yr",dmk:"3/yr",aiadmk:"3/yr"},
     {l:"Bus (Vettri Payanam)",tvk:"All govt buses",dmk:"Town only",aiadmk:"Town only"},
@@ -315,7 +333,13 @@ function renderH2H(){
 
 function renderBA(){
   const el=document.getElementById('baList');if(!el)return;
-  const comps=[
+  const comps = lang==='ta' ? [
+    {l:'காவல் அடிப்படை சம்பளம்',b:18200,a:25000,mx:30000,c:'#ef4444'},
+    {l:'நெல் MSP (₹/குவி)',b:2320,a:3500,mx:4000,c:'#10b981'},
+    {l:'கரும்பு (₹/டன்)',b:3200,a:4500,mx:5000,c:'#10b981'},
+    {l:'நெசவாளர் ஓய்வூதியம்',b:1000,a:3000,mx:3500,c:'#06b6d4'},
+    {l:'நெசவாளர் ஆண்டு உதவி',b:10000,a:30000,mx:35000,c:'#06b6d4'}
+  ] : [
     {l:'Police Base Salary',b:18200,a:25000,mx:30000,c:'#ef4444'},
     {l:'Paddy MSP (₹/qtl)',b:2320,a:3500,mx:4000,c:'#10b981'},
     {l:'Sugarcane (₹/ton)',b:3200,a:4500,mx:5000,c:'#10b981'},
