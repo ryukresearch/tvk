@@ -238,40 +238,46 @@ function showDet() {
   const opp26 = typeof OPP !== 'undefined' ? (OPP[c.n] || {}) : {};
   el.scrollTop = 0;
 
-  // 2021 result block
-  let html2021 = '';
-  if (res21) {
-    const wp = PARTY[res21.wp] || PARTY.OTH;
-    const rp = PARTY[res21.rp] || PARTY.OTH;
-    const winName = res21.wn ? `<div class="p21-wn">${res21.wn} <span class="crown" title="2021 winner">👑</span></div>` : '';
-    const turnout = res21.pv ? `<span class="p21-turnout">${res21.pv}% ${lang==='ta'?'வாக்களிப்பு':'turnout'}</span>` : '';
-    const mpct = res21.mp ? `<span class="p21-mpct">· ${res21.mp}%</span>` : '';
-    html2021 = `<div class="dc">
-      <div class="demo-t">${t('result_2021')}</div>
-      ${winName}
-      <div class="p21-row">
-        <span class="p21-win" style="background:${wp.c}">${lang==='ta'?wp.ta:wp.en}</span>
-        <span class="p21-txt">${t('won_by')} <b>${res21.m.toLocaleString()}</b> ${t('votes_suffix')}${mpct}</span>
-      </div>
-      <div class="p21-row" style="margin-top:6px">
-        <span class="p21-run" style="background:${rp.c}22;color:${rp.c};border:1px solid ${rp.c}55">2nd · ${lang==='ta'?rp.ta:rp.en}</span>
-        ${turnout}
-      </div>
-    </div>`;
-  }
-
-  // 2026 opposition block — all announced parties, ordered by prominence
-  let html2026 = '';
+  // Unified "Competition" block — merges 2021 winner/runner-up + 2026 opposition
+  // One row per party. Columns: [Party flag] [2026 candidate] [2021 result pill]
+  let htmlField = '';
   const PARTY_ORDER = ['DMK','AIADMK','NTK','INC','BJP','PMK','VCK','AMMK','MDMK'];
-  const oppEntries = PARTY_ORDER.filter(pk => opp26[pk]).map(pk => [pk, opp26[pk]]);
-  if (oppEntries.length) {
-    html2026 = `<div class="dc">
-      <div class="demo-t">${t('opponents_2026')}</div>
-      ${oppEntries.map(([pk, name]) => {
-        const p = PARTY[pk] || PARTY.OTH;
-        const won = res21 && res21.wp === pk;
-        const crown = won ? ` <span class="crown" title="${lang==='ta'?'2021 வெற்றி':'Won in 2021'}">👑</span>` : '';
-        return `<div class="opp-row ${won?'opp-won':''}"><span class="party-flag" style="background:${p.c}">${lang==='ta'?p.ta:p.en}</span><span class="opp-n">${name}${crown}</span></div>`;
+  const field = [];
+  const seen = new Set();
+  PARTY_ORDER.forEach(pk => {
+    const cand = opp26[pk] || null;
+    let p21 = null;
+    if (res21 && res21.wp === pk) p21 = {rank:'won', m:res21.m, mp:res21.mp, name:res21.wn};
+    else if (res21 && res21.rp === pk) p21 = {rank:'2nd'};
+    if (cand || p21) { field.push({pk, cand, p21}); seen.add(pk); }
+  });
+  // Include any 2021 winner/runner whose party isn't in PARTY_ORDER (fallback)
+  if (res21 && res21.wp && !seen.has(res21.wp)) field.unshift({pk:res21.wp, cand:null, p21:{rank:'won', m:res21.m, mp:res21.mp, name:res21.wn}});
+  if (res21 && res21.rp && !seen.has(res21.rp)) field.push({pk:res21.rp, cand:null, p21:{rank:'2nd'}});
+
+  if (field.length) {
+    const turnoutMeta = res21 && res21.pv ? `<span class="field-meta">${res21.pv}% ${lang==='ta'?'2021 வாக்களிப்பு':'2021 turnout'}</span>` : '';
+    const wonLbl = lang==='ta' ? '2021 வெற்றி' : 'Won 2021';
+    const secondLbl = lang==='ta' ? '2021 2வது' : '2nd 2021';
+    const tbaLbl = lang==='ta' ? 'அறிவிக்கப்படவில்லை' : 'TBA';
+    htmlField = `<div class="dc dc-field">
+      <div class="demo-t">${lang==='ta'?'போட்டியாளர்கள்':'COMPETITION'}${turnoutMeta}</div>
+      ${field.map(r => {
+        const p = PARTY[r.pk] || PARTY.OTH;
+        const won = r.p21 && r.p21.rank==='won';
+        const candTxt = r.cand ? r.cand : (won && r.p21.name ? r.p21.name : tbaLbl);
+        const candCls = r.cand ? 'field-cand' : (won && r.p21.name ? 'field-cand field-cand-21' : 'field-cand field-tba');
+        let p21Pill = '';
+        if (won) {
+          p21Pill = `<span class="field-p21 fw" style="background:${p.c}1a;color:${p.c};border-color:${p.c}55">🏆 ${wonLbl} · ${fmt(r.p21.m)}</span>`;
+        } else if (r.p21 && r.p21.rank === '2nd') {
+          p21Pill = `<span class="field-p21">${secondLbl}</span>`;
+        }
+        return `<div class="field-row ${won?'field-won':''}">
+          <span class="party-flag" style="background:${p.c}">${lang==='ta'?p.ta:p.en}</span>
+          <span class="${candCls}">${candTxt}</span>
+          ${p21Pill}
+        </div>`;
       }).join('')}
     </div>`;
   }
@@ -315,8 +321,30 @@ function showDet() {
         </div>
       </div>
     </div>
-    ${html2021}
-    ${html2026}
+    ${(() => {
+      const ext = (typeof CAND_EXT !== 'undefined') ? (CAND_EXT[c.n] || null) : null;
+      if (!ext || (!ext.evm && !ext.ig)) return '';
+      const evmLbl = lang==='ta' ? 'வாக்கு எண்' : 'EVM NUMBER';
+      const evmSub = lang==='ta' ? 'வாக்களிக்கும் நாளில் இந்த எண்ணை அழுத்தவும்' : 'Press this number on ballot day';
+      const igLbl = lang==='ta' ? 'அதிகாரப்பூர்வ Instagram' : 'OFFICIAL INSTAGRAM';
+      const evmBlock = ext.evm ? `
+        <div class="cta-evm">
+          <div class="cta-evm-box">${ext.evm}</div>
+          <div class="cta-evm-txt">
+            <div class="cta-evm-lbl">${evmLbl}</div>
+            <div class="cta-evm-sub">${evmSub}</div>
+          </div>
+        </div>` : '';
+      const igHandle = ext.ig ? '@' + ext.ig.replace(/^https?:\/\/(www\.)?instagram\.com\//,'').replace(/[\/?].*$/,'').replace(/\/$/,'') : '';
+      const igBlock = ext.ig ? `
+        <a class="cta-ig" href="${ext.ig}" target="_blank" rel="noopener noreferrer" aria-label="${igLbl}">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          <span class="cta-ig-h">${igHandle}</span>
+          <span class="cta-ig-cta">${lang==='ta'?'பார்வை':'Visit'}</span>
+        </a>` : '';
+      return `<div class="dc dc-cta">${evmBlock}${igBlock}</div>`;
+    })()}
+    ${htmlField}
     ${htmlIssues}
     <div class="dc">
       <div class="demo-t">${t('voter_demographics')}</div>
