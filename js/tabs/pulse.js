@@ -207,7 +207,7 @@ function buildPulse() {
       </div>
     </div>
     <div class="foot-sep"></div>
-    <a href="https://x.com/ryuk_nl" target="_blank" rel="noopener noreferrer">made by <span>RYUK</span></a>
+    <a href="https://www.instagram.com/tvk_shadow_warrior" target="_blank" rel="noopener noreferrer">Built by <span>Shadow Warrior</span></a>
   </div>`;
 
   el.innerHTML = h;
