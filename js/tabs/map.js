@@ -285,8 +285,9 @@ function showDet() {
   if (iss && iss.i && iss.i.length) {
     const ICN = {water:'💧',flooding:'🌊',agriculture:'🌾',pollution:'☁️',jobs:'💼',roads:'🛣',transport:'🚌',waste:'🗑',health:'🏥',land:'📋',safety:'🛡',governance:'⚖',housing:'🏠',fisheries:'🎣',education:'🎓',power:'⚡',caste:'👥'};
     const confCol = {HIGH:'#10b981',MED:'#f59e0b',LOW:'#6b7280'}[iss.c]||'#6b7280';
+    const issInfo = lang==='ta' ? 'AI மூலம் சேகரிக்கப்பட்ட தரவு · துல்லியமற்றதாக இருக்கலாம்' : 'Data captured using AI · may be inaccurate';
     htmlIssues = `<div class="dc dc-issues">
-      <div class="demo-t">${lang==='ta'?'உள்ளூர் பிரச்னைகள்':'LOCAL ISSUES'}<span class="issue-conf" style="color:${confCol}">· ${lang==='ta'?'நம்பகத்தன்மை':'confidence'} ${iss.c}</span></div>
+      <div class="demo-t">${lang==='ta'?'உள்ளூர் பிரச்னைகள்':'LOCAL ISSUES'}<button class="info-i" title="${issInfo}" onclick="toast('${issInfo.replace(/'/g,"\\'")}')" aria-label="info">i</button><span class="issue-conf" style="color:${confCol}">· ${lang==='ta'?'நம்பகத்தன்மை':'confidence'} ${iss.c}</span></div>
       ${iss.i.map(([t,cat,sev])=>`<div class="issue-row"><span class="issue-ic">${ICN[cat]||'•'}</span><span class="issue-sev s-${sev.toLowerCase()}">${sev}</span><span class="issue-t">${t}</span></div>`).join('')}
     </div>`;
   }
@@ -323,12 +324,13 @@ function showDet() {
       if (!ext || (!ext.evm && !ext.ig)) return '';
       const evmLbl = lang==='ta' ? 'வாக்கு எண்' : 'EVM NUMBER';
       const evmSub = lang==='ta' ? 'வாக்களிக்கும் நாளில் இந்த எண்ணை அழுத்தவும்' : 'Press this number on ballot day';
+      const evmInfo = lang==='ta' ? 'மாற்றத்திற்கு உட்பட்டது · சமீபத்திய அறிவிப்புகளைப் பார்க்கவும்' : 'Subject to change · refer to recent announcements';
       const igLbl = lang==='ta' ? 'அதிகாரப்பூர்வ Instagram' : 'OFFICIAL INSTAGRAM';
       const evmBlock = ext.evm ? `
         <div class="cta-evm">
           <div class="cta-evm-box">${ext.evm}</div>
           <div class="cta-evm-txt">
-            <div class="cta-evm-lbl">${evmLbl}</div>
+            <div class="cta-evm-lbl">${evmLbl}<button class="info-i" title="${evmInfo}" onclick="toast('${evmInfo.replace(/'/g,"\\'")}')" aria-label="info">i</button></div>
             <div class="cta-evm-sub">${evmSub}</div>
           </div>
         </div>` : '';
