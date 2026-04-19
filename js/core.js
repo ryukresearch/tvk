@@ -7,7 +7,7 @@
 let lang = localStorage.getItem('tvk-lang') || 'ta';
 let theme = localStorage.getItem('tvk-theme') || 'light';
 let activeTab = 0;
-let sel = null;         // selected constituency seat#
+let sel = 12;           // selected constituency seat# (Perambur — Vijay's seat, default)
 let ov = 0;             // map overlay index
 let filtered = null;    // map filter results
 let persona = 'all';    // promise persona filter

@@ -6,9 +6,27 @@ const PERSONA_ICON = {
   weaver: '🧵', all: '⭐'
 };
 
+// Constellation zoom — default 1.2× (+20%), persisted. Range 0.8 → 2.0 in 0.2 steps.
+let constZoom = parseFloat(localStorage.getItem('tvk-const-zoom') || '1.2');
+if (!isFinite(constZoom) || constZoom < 0.8 || constZoom > 2.0) constZoom = 1.2;
+function setConstZoom(delta) {
+  const next = Math.round((constZoom + delta) * 10) / 10;
+  if (next < 0.8 || next > 2.0) return;
+  constZoom = next;
+  localStorage.setItem('tvk-const-zoom', String(constZoom));
+  if (typeof renderConstellation === 'function') renderConstellation('constWrap', persona);
+}
+
 // Build a compact, meaningful constellation label from a manifesto item.
 const STAR_FILLER = new Set(['scheme','act','welfare','rights','protection','the','and','for','of','a','to','in','on','as','by','at','hike','amount','sheme','model','scheme;']);
 function starLabel(p) {
+  // Tamil override — use curated short label when available + current lang is TA
+  if (lang === 'ta' && typeof MANIFESTO_TA !== 'undefined' && MANIFESTO_TA[p.id]) {
+    const rawM = (p.metric || '').trim();
+    const m = typeof fmtMetric === 'function' ? fmtMetric(rawM) : rawM;
+    const mShort = m && m.length <= 12 ? m : '';
+    return mShort ? `${mShort} · ${MANIFESTO_TA[p.id]}` : MANIFESTO_TA[p.id];
+  }
   let t = (p.title || '').replace(/^[A-Z]\.\s*/, '').replace(/[:;]+$/, '').trim();
   t = t.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
   // Metric formatting
@@ -63,6 +81,19 @@ function renderConstellation(containerId, personaKey) {
   if (pf !== 'all') matches = matches.filter(p => p.pillar === pf);
   const tf = (typeof thoonFilter !== 'undefined') ? thoonFilter : 'all';
   if (tf !== 'all') matches = matches.filter(p => p.thoon === tf);
+  // Empty-filter guard — friendly state + reset CTA instead of silent blank starfield
+  if (!matches.length) {
+    const msg = lang==='ta'
+      ? 'இந்த வடிகட்டிகளுக்கு பொருந்தும் வாக்குறுதி இல்லை'
+      : 'No promises match these filters';
+    const btn = lang==='ta' ? 'வடிகட்டிகளை நீக்கு' : 'Reset filters';
+    el.innerHTML = `<div class="const-empty">
+      <div class="const-empty-ic">✨</div>
+      <div class="const-empty-t">${msg}</div>
+      <button class="btn btn-ghost" onclick="resetManifestoFilters()">${btn}</button>
+    </div>`;
+    return;
+  }
   matches.forEach(p => { p._v = p._v || deriveStar(p); });
   matches.sort((a, b) => (b._v.impact - a._v.impact) || (b._v.yr - a._v.yr));
   matches = matches.slice(0, 15);
@@ -70,9 +101,10 @@ function renderConstellation(containerId, personaKey) {
   const N = matches.length;
   const cx = 200, cy = 200;
   const baseR = 105;
-  const isMob = window.innerWidth < 768;
-  const filledMax = isMob ? 6 : (lang === 'ta' ? 12 : 15);
-  const labelMax = filledMax;
+  // Show the same count on mobile and desktop — 15 stars with labels everywhere.
+  // (Mobile CSS already scales font-size down to 7.5–8px for fit.)
+  const filledMax = 15;
+  const labelMax = 15;
   const stars = matches.map((p, i) => {
     const v = p._v;
     const ring = i % 3;
@@ -96,6 +128,11 @@ function renderConstellation(containerId, personaKey) {
   const totalYr = stars.reduce((s, st) => s + (st.v.yr || 0), 0);
   const icon = PERSONA_ICON[pk] || '⭐';
 
+  // Zoom-out factor applied to star positions, star sizes, label offsets.
+  // Content is scaled around center (cx,cy) via SVG transform — pure visual zoom.
+  const zoomT = `translate(${cx} ${cy}) scale(${constZoom}) translate(${-cx} ${-cy})`;
+  const zoomPct = Math.round(constZoom * 100);
+
   el.innerHTML = `
     <div class="const-head">
       <div class="const-counter">
@@ -108,7 +145,11 @@ function renderConstellation(containerId, personaKey) {
       </div>
     </div>
     <div class="const-stage">
-      <svg viewBox="-80 -10 560 420" preserveAspectRatio="xMidYMid meet" class="const-svg" id="constSvg">
+      <div class="const-zoom" role="group">
+        <button class="cz-btn" onclick="setConstZoom(0.2)" aria-label="${lang==='ta'?'பெரிதாக்கு':'Zoom in'}" ${constZoom>=2.0?'disabled':''}>+</button>
+        <button class="cz-btn" onclick="setConstZoom(-0.2)" aria-label="${lang==='ta'?'சிறிதாக்கு':'Zoom out'}" ${constZoom<=0.8?'disabled':''}>−</button>
+      </div>
+      <svg viewBox="-100 -100 600 600" preserveAspectRatio="xMidYMid meet" class="const-svg" id="constSvg">
         <defs>
           <radialGradient id="constBg" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="rgba(233,69,96,0.12)"/>
@@ -119,24 +160,24 @@ function renderConstellation(containerId, personaKey) {
             <stop offset="0%" stop-color="#e94560" stop-opacity="0.55"/>
             <stop offset="100%" stop-color="#fbbf24" stop-opacity="0.15"/>
           </linearGradient>
-        </defs>
-        <circle cx="200" cy="200" r="180" fill="url(#constBg)"/>
-        ${stars.map((s, i) => `
-          <line class="const-thread" data-i="${i}" x1="${cx}" y1="${cy}" x2="${s.x}" y2="${s.y}" stroke="url(#threadG)" stroke-width="0.6" opacity="0" stroke-dasharray="${Math.hypot(s.x-cx,s.y-cy).toFixed(1)}" stroke-dashoffset="${Math.hypot(s.x-cx,s.y-cy).toFixed(1)}"/>
-        `).join('')}
-        ${stars.map((s, i) => `
-          <g class="const-star" data-i="${i}" data-id="${s.p.id}" transform="translate(${s.x},${s.y}) scale(0)" style="cursor:pointer">
-            <circle r="${s.size + 4}" fill="${s.color}" opacity="0.18"/>
-            <circle r="${s.size}" fill="${s.color}"/>
-            <circle r="${s.size * 0.4}" fill="#fff" opacity="0.85"/>
-          </g>
-        `).join('')}
-        ${stars.map((s, i) => s.labelTxt ? `
-          <text class="const-label ${s.filled?'filled':'outline'}" data-i="${i}" data-id="${s.p.id}" x="${s.lx.toFixed(1)}" y="${s.ly.toFixed(1)}" text-anchor="${s.anchor}">${s.labelTxt}</text>
-        ` : '').join('')}
-        <defs>
           <clipPath id="constCenterClip"><circle cx="${cx}" cy="${cy}" r="28"/></clipPath>
         </defs>
+        <circle cx="200" cy="200" r="180" fill="url(#constBg)"/>
+        <g class="const-zoom-g" transform="${zoomT}">
+          ${stars.map((s, i) => `
+            <line class="const-thread" data-i="${i}" x1="${cx}" y1="${cy}" x2="${s.x}" y2="${s.y}" stroke="url(#threadG)" stroke-width="0.6" opacity="0" stroke-dasharray="${Math.hypot(s.x-cx,s.y-cy).toFixed(1)}" stroke-dashoffset="${Math.hypot(s.x-cx,s.y-cy).toFixed(1)}"/>
+          `).join('')}
+          ${stars.map((s, i) => `
+            <g class="const-star" data-i="${i}" data-id="${s.p.id}" transform="translate(${s.x},${s.y}) scale(0)" style="cursor:pointer">
+              <circle r="${s.size + 4}" fill="${s.color}" opacity="0.18"/>
+              <circle r="${s.size}" fill="${s.color}"/>
+              <circle r="${s.size * 0.4}" fill="#fff" opacity="0.85"/>
+            </g>
+          `).join('')}
+          ${stars.map((s, i) => s.labelTxt ? `
+            <text class="const-label ${s.filled?'filled':'outline'}" data-i="${i}" data-id="${s.p.id}" x="${s.lx.toFixed(1)}" y="${s.ly.toFixed(1)}" text-anchor="${s.anchor}">${s.labelTxt}</text>
+          ` : '').join('')}
+        </g>
         <g transform="translate(${cx},${cy})">
           <circle r="34" fill="none" stroke="#fbbf24" stroke-width="0.8" opacity="0.55"/>
           <circle r="30" fill="#0a0a12" stroke="#e94560" stroke-width="1.8"/>

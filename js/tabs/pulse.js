@@ -61,7 +61,7 @@ function buildPulse() {
     <div class="sec-label">${lang==='ta'?'கோட்பாடு':'CORE PHILOSOPHY'}</div>
     <div class="philo-thesis">"${lang==='ta'?(PHILO.thesis.ta):PHILO.thesis.en}"</div>
     <div class="philo-lede">${lang==='ta'
-      ?'திருக்குறள் அரசாங்கத்திற்கு மூன்று நிபந்தனைகளை வைக்கிறது — அறம், பொருள், இன்பம். தி.வெ.க. அறிக்கை இந்த மூன்றையும் ஒன்றாக நடைமுறைப்படுத்துகிறது.'
+      ?'திருக்குறள் அரசாங்கத்திற்கு மூன்று நிபந்தனைகளை வைக்கிறது — அறம், பொருள், இன்பம். த.வெ.க. அறிக்கை இந்த மூன்றையும் ஒன்றாக நடைமுறைப்படுத்துகிறது.'
       :"Thiruvalluvar's Thirukkural sets three tests every government must pass — virtue (Aram), wealth (Porul), and joy (Inbam). The TVK manifesto runs all three as one integrated framework, not sequentially."}</div>
     <div class="bento philo-bento">
       <div class="bento-c" style="--pc:#8b5cf6">
@@ -199,7 +199,7 @@ function buildPulse() {
 
   <div class="tab-foot">
     <div class="tvk-official">
-      <div class="foot-label">${lang==='ta'?'அதிகாரப்பூர்வ தி.வெ.க.':'OFFICIAL TVK'}</div>
+      <div class="foot-label">${lang==='ta'?'அதிகாரப்பூர்வ த.வெ.க.':'OFFICIAL TVK'}</div>
       <div class="tvk-links">
         <a href="https://tvkvijay.com/en/contact-us" target="_blank" rel="noopener noreferrer"><svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>tvkvijay.com</a>
         <a href="https://x.com/TVKPartyHQ" target="_blank" rel="noopener noreferrer"><svg class="ico-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@TVKPartyHQ</a>
@@ -208,6 +208,7 @@ function buildPulse() {
     </div>
     <div class="foot-sep"></div>
     <a href="https://www.instagram.com/tvk_shadow_warrior" target="_blank" rel="noopener noreferrer">Built by <span>Shadow Warrior</span></a>
+    <div class="foot-disclaimer">Independent project · Public data · AI-assisted · Not affiliated with TVK or ECI · <a href="javascript:void(0)" onclick="showDisclaimer()">Disclaimer</a></div>
   </div>`;
 
   el.innerHTML = h;
@@ -229,4 +230,20 @@ function buildPulse() {
   }, 200);
 }
 
-function jumpToSeat(n) { sel = n; switchTab(2); }
+function jumpToSeat(n) {
+  switchTab(2);
+  // Re-select after switch — if map tab was already built, switchTab won't rebuild,
+  // so selectSeat() is what actually redraws the map + detail panel.
+  if (typeof selectSeat === 'function') selectSeat(n);
+  else sel = n;
+}
+
+function showDisclaimer() {
+  const title = lang==='ta' ? 'பொறுப்புத் துறப்பு' : 'Disclaimer';
+  const body = 'This is an independent, non-partisan project built using publicly available election data. Not affiliated with, endorsed by, or connected to Tamilaga Vettri Kazhagam (TVK), the Election Commission of India, or any political party. Data sourced from public manifesto documents, ECI records, and news reports. Built with AI assistance. Accuracy not guaranteed — verify critical information from official sources.';
+  openModal(`<div class="disc-modal">
+    <div class="disc-title">${title}</div>
+    <div class="disc-body">${body}</div>
+    <button class="btn btn-primary" onclick="closeModal()">${lang==='ta'?'சரி':'OK'}</button>
+  </div>`);
+}

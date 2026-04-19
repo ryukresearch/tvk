@@ -67,17 +67,18 @@ function buildPromises(){
       </button>`).join('')}
     </div>
     <div class="pillar-chips" id="pillarChips">
-      <button class="pchip on" data-p="all" onclick="setPillar('all')">${lang==='ta'?'அனைத்தும்':'All'}</button>
-      <button class="pchip" data-p="aram"  onclick="setPillar('aram')"  style="--pc:#8b5cf6">அறம் · Aram</button>
-      <button class="pchip" data-p="porul" onclick="setPillar('porul')" style="--pc:#e94560">பொருள் · Porul</button>
-      <button class="pchip" data-p="inbam" onclick="setPillar('inbam')" style="--pc:#10b981">இன்பம் · Inbam</button>
+      <button class="pchip ${pillarFilter==='all'?'on':''}" data-p="all" onclick="setPillar('all')">${lang==='ta'?'அனைத்தும்':'All'}</button>
+      <button class="pchip ${pillarFilter==='aram'?'on':''}"  data-p="aram"  onclick="setPillar('aram')"  style="--pc:#8b5cf6">அறம் · Aram</button>
+      <button class="pchip ${pillarFilter==='porul'?'on':''}" data-p="porul" onclick="setPillar('porul')" style="--pc:#e94560">பொருள் · Porul</button>
+      <button class="pchip ${pillarFilter==='inbam'?'on':''}" data-p="inbam" onclick="setPillar('inbam')" style="--pc:#10b981">இன்பம் · Inbam</button>
     </div>
     <div class="thoon-chips" id="thoonChips">
       ${[[1,'Tamil','தமிழ்'],[2,'Dignity','கண்ணியம்'],[3,'Women','பெண்'],[4,'Youth','இளைஞர்'],[5,'Farmers','விவசாயி'],[6,'Education','கல்வி'],[7,'Wealth','செல்வம்'],[8,'Health','மருத்துவம்'],[9,'Infra','உட்கட்'],[10,'Govt','ஆட்சி']].map(([n,en,ta])=>{
         const pl=(typeof PILLARS!=='undefined'&&THOONS&&THOONS[n])?PILLARS[THOONS[n].pillar].c:'#e94560';
         const full=(THOONS&&THOONS[n])?THOONS[n].en:'';
         const lbl=lang==='ta'?ta:en;
-        return `<button class="tchip" data-t="${n}" onclick="setThoon(${n})" title="${full}" style="--pc:${pl}"><b>${n}</b><span>${lbl}</span></button>`;
+        const onCls = (thoonFilter===n)?'on':'';
+        return `<button class="tchip ${onCls}" data-t="${n}" onclick="setThoon(${n})" title="${full}" style="--pc:${pl}"><b>${n}</b><span>${lbl}</span></button>`;
       }).join('')}
     </div>
     <div class="view-row">
@@ -158,7 +159,10 @@ function buildPromises(){
     <div id="baList"></div>
   </div>
 
-  <div class="tab-foot">made by <span>RYUK</span></div>`;
+  <div class="tab-foot">
+    <a href="https://www.instagram.com/tvk_shadow_warrior" target="_blank" rel="noopener noreferrer">Built by <span>Shadow Warrior</span></a>
+    <div class="foot-disclaimer">Independent project · Public data · AI-assisted · Not affiliated with TVK or ECI · <a href="javascript:void(0)" onclick="showDisclaimer()">Disclaimer</a></div>
+  </div>`;
 
   el.innerHTML=h;
   renderPromiseCards();
@@ -238,9 +242,26 @@ function setPillar(p){
 }
 function setThoon(n){
   thoonFilter = (thoonFilter === n) ? 'all' : n;
+  // A thoon lives inside one pillar — if a non-matching pillar is active,
+  // the intersection would be empty. Sync pillar to this thoon's parent.
+  if (thoonFilter !== 'all' && typeof THOONS !== 'undefined' && THOONS[n] && THOONS[n].pillar) {
+    pillarFilter = THOONS[n].pillar;
+    document.querySelectorAll('#pillarChips .pchip').forEach(b => b.classList.toggle('on', b.dataset.p === pillarFilter));
+  }
   document.querySelectorAll('#thoonChips .tchip').forEach(b => b.classList.toggle('on', +b.dataset.t === thoonFilter));
   renderPromiseCards();
   if (typeof renderConstellation === 'function') renderConstellation('constWrap', persona);
+}
+
+// Reset all manifesto filters (persona/pillar/thoon) and rebuild the tab
+function resetManifestoFilters(){
+  persona = 'all';
+  pillarFilter = 'all';
+  thoonFilter = 'all';
+  tabBuilt[1] = false;
+  document.getElementById('tab1').innerHTML = '';
+  buildTab(1);
+  tabBuilt[1] = true;
 }
 
 function renderPromiseCards(){
@@ -249,7 +270,12 @@ function renderPromiseCards(){
   if(persona !== 'all') items = items.filter(x => x.personas && (x.personas.includes(persona) || (x.personas.length===1 && x.personas[0]==='all')));
   if(pillarFilter !== 'all') items = items.filter(x => x.pillar === pillarFilter);
   if(thoonFilter !== 'all') items = items.filter(x => x.thoon === thoonFilter);
-  if(!items.length){ g.innerHTML = `<div style="padding:32px;text-align:center;color:var(--t3)">No matches.</div>`; return; }
+  if(!items.length){
+    const msg = lang==='ta' ? 'இந்த வடிகட்டிகளுக்கு பொருந்தும் வாக்குறுதி இல்லை' : 'No promises match these filters';
+    const btn = lang==='ta' ? 'வடிகட்டிகளை நீக்கு' : 'Reset filters';
+    g.innerHTML = `<div style="padding:32px 20px;text-align:center;color:var(--t3);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:12px">${msg}<button class="btn btn-ghost" onclick="resetManifestoFilters()">${btn}</button></div>`;
+    return;
+  }
   // Flat single grid — sort by thoon then impact-ish (metric presence first)
   items.sort((a,b) => (a.thoon - b.thoon) || ((b.metric?1:0) - (a.metric?1:0)));
   g.innerHTML = `<div class="flat-grid">

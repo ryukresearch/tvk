@@ -45,7 +45,10 @@ function buildMap() {
     <div class="sec-desc">${t('stronghold_sub')}</div>
     <div id="strongholds"></div>
   </div>
-  <div class="tab-foot">made by <span>RYUK</span></div>`;
+  <div class="tab-foot">
+    <a href="https://www.instagram.com/tvk_shadow_warrior" target="_blank" rel="noopener noreferrer">Built by <span>Shadow Warrior</span></a>
+    <div class="foot-disclaimer">Independent project · Public data · AI-assisted · Not affiliated with TVK or ECI · <a href="javascript:void(0)" onclick="showDisclaimer()">Disclaimer</a></div>
+  </div>`;
 
   // Overlay chips
   document.getElementById('ovChips').innerHTML = OVS.map((o, i) =>
@@ -111,7 +114,7 @@ function updateOvDesc() {
     'போர்க்களம்: 2021 வித்தியாசம் — சிவப்பு <15K · ஆரஞ்சு <30K · பச்சை 30K+',
     '2021-ல் வென்ற கட்சி நிறத்தில் புள்ளிகள்',
     'புள்ளி அளவு = வாக்காளர் அடர்த்தி',
-    'தி.வெ.க. அறிவித்த 2 தொகுதிகள் — பிற 232 நிலுவையில்'
+    'த.வெ.க. அறிவித்த 2 தொகுதிகள் — பிற 232 நிலுவையில்'
   ] : [
     'Battlegrounds: 2021 margin — red <15K · orange <30K · green 30K+',
     'Dots colored by 2021 winning party',

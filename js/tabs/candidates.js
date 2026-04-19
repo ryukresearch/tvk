@@ -36,7 +36,10 @@ function buildCandidates(){
 
     <div id="candOut"></div>
   </div>
-  <div class="tab-foot">made by <span>RYUK</span></div>`;
+  <div class="tab-foot">
+    <a href="https://www.instagram.com/tvk_shadow_warrior" target="_blank" rel="noopener noreferrer">Built by <span>Shadow Warrior</span></a>
+    <div class="foot-disclaimer">Independent project · Public data · AI-assisted · Not affiliated with TVK or ECI · <a href="javascript:void(0)" onclick="showDisclaimer()">Disclaimer</a></div>
+  </div>`;
 
   renderCandFilters();
   document.getElementById('candSortSel').value=candSort;
